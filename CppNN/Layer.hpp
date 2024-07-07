@@ -5,7 +5,7 @@ template <typename T>
 class Layer
 {
 public:
-    virtual Index initialize(const Index &input_size) = 0;
+    virtual Index initialize(const Index &input_dimension) = 0;
 
     virtual Array<T> forward(const Array<T> &x) = 0;
     virtual Array<T> backward(const Array<T> &x) = 0;

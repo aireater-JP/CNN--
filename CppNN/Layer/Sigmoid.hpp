@@ -7,9 +7,9 @@ class Sigmoid : public Layer<T>
     Array<T> _output_cash;
 
 public:
-    Index initialize(const Index &input_size) override
+    Index initialize(const Index &input_dimension) override
     {
-        return input_size;
+        return input_dimension;
     }
 
     Array<T> forward(const Array<T> &x) override
