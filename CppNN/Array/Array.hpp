@@ -80,6 +80,7 @@ public:
     friend Array<U> operator%(const Array<U> &x, const Array<U> &y);
     template <typename U>
     friend Array<U> operator^(const Array<U> &x, const Array<U> &y);
+    
     // 出力
     template <typename U>
     friend void out(const Array<U> &array);
@@ -102,6 +103,7 @@ private:
 };
 
 #include "Array.cpp"
+#include "4_arithmetic_operations.cpp"
 #include "Array_calculate.cpp"
 
 // 出力関数

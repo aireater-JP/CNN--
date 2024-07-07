@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 // コンストラクタ
+//--------------------------------------------------------------
 template <typename T>
 Array<T>::Array(const Index &dimension, const T &value) : Array(dimension)
 {
@@ -28,6 +29,7 @@ Array<T>::Array(Array &&array) noexcept : _dimension(std::move(array._dimension)
 
 //--------------------------------------------------------------
 // 代入演算子
+//--------------------------------------------------------------
 template <typename T>
 Array<T> &Array<T>::operator=(const Array &array)
 {
@@ -58,7 +60,7 @@ Array<T> &Array<T>::operator=(Array &&array) noexcept
 }
 
 //--------------------------------------------------------------
-// 計算
+// 内部で使用
 //--------------------------------------------------------------
 // アクセス用の次元の積を取る
 template <typename T>
@@ -132,9 +134,29 @@ Index Array<T>::broadcast_to_Index(const Index &index) const
 
     return res;
 }
+//--------------------------------------------------------------
+// ブロードキャスト後の次元を求める
+Index broadcast_shape(const Index &x, const Index &y)
+{
+    size_t r_size = std::max(x.size(), y.size());
+    Index res(r_size);
+
+    for (size_t i = 0; i < r_size; ++i)
+    {
+        size_t x_temp = (i < x.size()) ? x.back_access(i) : 1;
+        size_t y_temp = (i < y.size()) ? y.back_access(i) : 1;
+
+        if (x_temp != y_temp and x_temp != 1 and y_temp != 1)
+            throw std::logic_error("ブロードキャストできないお");
+
+        res.back_access(i) = std::max(x_temp, y_temp);
+    }
+    return res;
+}
 
 //--------------------------------------------------------------
 // 変形
+//--------------------------------------------------------------
 template <typename T>
 void Array<T>::reshape(const Index &index)
 {

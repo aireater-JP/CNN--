@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "Layer.hpp"
 
 template <typename T>
