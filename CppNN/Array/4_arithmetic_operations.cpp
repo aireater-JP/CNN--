@@ -198,7 +198,7 @@ Array<T> operator^(const Array<T> &x, const T y)
 {
     Array<T> res(x.dimension());
     for (size_t i = 0; i < res.size(); ++i)
-        i = std::pow(i, y);
+        res[i] = std::pow(x[i], y);
 
     return res;
 }
