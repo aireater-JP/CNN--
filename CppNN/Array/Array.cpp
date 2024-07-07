@@ -160,10 +160,35 @@ Index broadcast_shape(const Index &x, const Index &y)
 template <typename T>
 void Array<T>::reshape(const Index &index)
 {
+    if (std::count(index.begin(), index.end(), 0) == 1)
+    {
+        Index idx = index;
+        size_t temp = 1;
+        for (const size_t &i : idx)
+            if (i != 0)
+                temp *= i;
+
+        if (_size % temp != 0)
+            throw "計算できないよ";
+
+        *std::find(idx.begin(), idx.end(), 0) = _size / temp;
+        _dimension = idx;
+        _stride = calculate_stride(_dimension);
+        return;
+    }
     if (_size != calculate_size(index))
         throw "変形先と要素数が一致しません";
 
     _dimension = index;
+    _stride = calculate_stride(_dimension);
+}
+
+template <typename T>
+Array<T> reshape(const Index &index, const Array<T> &array)
+{
+    Array<T> temp = array;
+    temp.reshape({index});
+    return temp;
 }
 
 template <typename T>

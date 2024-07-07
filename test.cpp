@@ -11,6 +11,6 @@ int main()
     a[4] = 4;
     a[5] = 5;
 
+    a.reshape({6,1});
     out(a);
-    out(a.sum(0));
 }
