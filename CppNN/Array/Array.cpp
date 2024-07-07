@@ -177,3 +177,34 @@ Array<T> Array<T>::share() const
 
     return res;
 }
+
+template <typename T>
+Array<T> Array<T>::Transpose()
+{
+    if (_dimension.size() != 2)
+        throw "計算できないよ!";
+
+    Array res(_dimension[1], _dimension[0]);
+
+    for (size_t i = 0; i < _dimension[0]; ++i)
+        for (size_t j = 0; j < _dimension[1]; ++j)
+            res[{j, i}] = _data[{i, j}];
+
+    return res;
+}
+
+template <typename T>
+Array<T> Array<T>::sum(const size_t axis)
+{
+    Index dim = _dimension;
+    dim[axis] = 1;
+    Array<T> res(dim);
+
+    for (size_t i = 0; i < _size; ++i)
+    {
+        Index idx = calculate_one_to_mul(i);
+        res[res.broadcast_to_Index(idx)] += _data[calculate_mul_to_one(idx)];
+    }
+
+    return res;
+}

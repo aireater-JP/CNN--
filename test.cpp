@@ -10,7 +10,7 @@ int main()
     a[3] = 3;
     a[4] = 4;
     a[5] = 5;
-    Array<float> b({2, 3}, 1);
-    out(layer.forward(a));
-    out(layer.backward(b));
+
+    out(a);
+    out(a.sum(0));
 }

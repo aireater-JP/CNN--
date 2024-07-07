@@ -80,13 +80,16 @@ public:
     friend Array<U> operator%(const Array<U> &x, const Array<U> &y);
     template <typename U>
     friend Array<U> operator^(const Array<U> &x, const Array<U> &y);
-    
+
     // 出力
     template <typename U>
     friend void out(const Array<U> &array);
 
     void reshape(const Index &index);
-    Array<T> share() const;
+    Array share() const;
+
+    Array Transpose();
+    Array sum(const size_t axis);
 
 private:
     //--------------------------------------------------------------
