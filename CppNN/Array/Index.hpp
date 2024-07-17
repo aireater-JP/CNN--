@@ -68,5 +68,5 @@ inline void out(const Index &x)
         }
         out(",");
     }
-    out("]");
+    out("]\n\n");
 }

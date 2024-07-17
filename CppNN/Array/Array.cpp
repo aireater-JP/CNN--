@@ -16,13 +16,13 @@ Array<T>::Array(Index &&dimension, const T &value) noexcept : Array(dimension)
 }
 
 template <typename T>
-Array<T>::Array(const Array &array) : _dimension(array._dimension), _stride(array._stride), _size(array._size), _data(new T[_size])
+Array<T>::Array(const Array &array) : _start(0), _dimension(array._dimension), _stride(array._stride), _size(array._size), _data(new T[_size])
 {
     std::copy(array.begin(), array.end(), begin());
 }
 
 template <typename T>
-Array<T>::Array(Array &&array) noexcept : _dimension(std::move(array._dimension)), _stride(std::move(array._stride)), _size(array._size), _data(std::move(array._data))
+Array<T>::Array(Array &&array) noexcept : _start(array._start), _dimension(std::move(array._dimension)), _stride(std::move(array._stride)), _size(array._size), _data(std::move(array._data))
 {
     array._size = 0;
 }
@@ -35,6 +35,7 @@ Array<T> &Array<T>::operator=(const Array &array)
 {
     if (this != &array)
     {
+        _start = 0;
         _dimension = array._dimension;
         _stride = array._stride;
         _size = array._size;
@@ -49,6 +50,7 @@ Array<T> &Array<T>::operator=(Array &&array) noexcept
 {
     if (this != &array)
     {
+        _start = array._start;
         _dimension = std::move(array._dimension);
         _stride = std::move(array._stride);
         _size = array._size;
@@ -153,13 +155,13 @@ Index broadcast_shape(const Index &x, const Index &y)
     }
     return res;
 }
-
 //--------------------------------------------------------------
 // 変形
 //--------------------------------------------------------------
 template <typename T>
 void Array<T>::reshape(const Index &index)
 {
+    // 未知数が1つの場合
     if (std::count(index.begin(), index.end(), 0) == 1)
     {
         Index idx = index;
@@ -172,6 +174,7 @@ void Array<T>::reshape(const Index &index)
             throw "計算できないよ";
 
         *std::find(idx.begin(), idx.end(), 0) = _size / temp;
+
         _dimension = idx;
         _stride = calculate_stride(_dimension);
         return;
@@ -190,14 +193,40 @@ Array<T> reshape(const Index &index, const Array<T> &array)
     temp.reshape({index});
     return temp;
 }
-
+//--------------------------------------------------------------
+// 変形
+//--------------------------------------------------------------
 template <typename T>
-Array<T> Array<T>::share() const
+Array<T> Array<T>::share(const Index &index) const
 {
+    if (index.size() == 0)
+    {
+        Array<T> res;
+        res._start = _start;
+        res._dimension = _dimension;
+        res._stride = _stride;
+        res._size = _size;
+        res._data = _data;
+
+        return res;
+    }
+
+    size_t start = 0;
+    Index idx(_dimension.size() - index.size());
+    for (size_t i = 0; i < index.size(); ++i)
+    {
+        if (index[i] >= _dimension[i])
+            throw "エラーだお";
+        start += index[i] * _stride[i];
+    }
+    for (size_t i = 0; i < idx.size(); ++i)
+        idx.back_access(i) = _dimension.back_access(i);
+
     Array<T> res;
-    res._dimension = _dimension;
-    res._stride = _stride;
-    res._size = _size;
+    res._start = start;
+    res._dimension = idx;
+    res._stride = res.calculate_stride(idx);
+    res._size = res.calculate_size(idx);
     res._data = _data;
 
     return res;
@@ -209,11 +238,11 @@ Array<T> Array<T>::Transpose()
     if (_dimension.size() != 2)
         throw "計算できないよ!";
 
-    Array res(_dimension[1], _dimension[0]);
+    Array res({_dimension[1], _dimension[0]});
 
     for (size_t i = 0; i < _dimension[0]; ++i)
         for (size_t j = 0; j < _dimension[1]; ++j)
-            res[{j, i}] = _data[{i, j}];
+            res[{j, i}] = operator[]({i, j});
 
     return res;
 }
@@ -228,7 +257,7 @@ Array<T> Array<T>::sum(const size_t axis)
     for (size_t i = 0; i < _size; ++i)
     {
         Index idx = calculate_one_to_mul(i);
-        res[res.broadcast_to_Index(idx)] += _data[calculate_mul_to_one(idx)];
+        res[res.broadcast_to_Index(idx)] += operator[](idx);
     }
 
     return res;

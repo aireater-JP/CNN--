@@ -3,14 +3,11 @@
 int main()
 {
     Tanh<float> layer;
-    Array<float> a({2, 3});
-    a[0] = 0;
-    a[1] = 1;
-    a[2] = 2;
-    a[3] = 3;
-    a[4] = 4;
-    a[5] = 5;
+    Array<float> a({2, 2, 5});
+    for (size_t i = 0; i < a.size(); ++i)
+    {
+        a[i] = i;
+    }
 
-    a.reshape({6,1});
-    out(a);
+    out(dot(reshape({0,2},a),reshape({2,0},a)).Transpose());
 }
