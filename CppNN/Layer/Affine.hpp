@@ -48,7 +48,7 @@ public:
         W -= dW * learning_rate;
         B -= dB * learning_rate;
 
-        dW = Array<T>;
-        dB = Array<T>;
+        dW.clear();
+        dB.clear();
     }
 };

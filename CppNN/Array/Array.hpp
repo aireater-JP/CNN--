@@ -81,11 +81,31 @@ public:
     template <typename U>
     friend Array<U> operator^(const Array<U> &x, const Array<U> &y);
 
-    Array &operator+=(const Array &x) { return *this + x; }
-    Array &operator-=(const Array &x) { return *this - x; }
-    Array &operator*=(const Array &x) { return *this * x; }
-    Array &operator/=(const Array &x) { return *this / x; }
-    Array &operator^=(const Array &x) { return *this ^ x; }
+    Array &operator+=(const Array &x)
+    {
+        *this = *this + x;
+        return *this;
+    }
+    Array &operator-=(const Array &x)
+    {
+        *this = *this - x;
+        return *this;
+    }
+    Array &operator*=(const Array &x)
+    {
+        *this = *this * x;
+        return *this;
+    }
+    Array &operator/=(const Array &x)
+    {
+        *this = *this / x;
+        return *this;
+    }
+    Array &operator^=(const Array &x)
+    {
+        *this = *this ^ x;
+        return *this;
+    }
 
     // 出力
     template <typename U>
@@ -97,6 +117,8 @@ public:
     Array Transpose();
     Array sum(const size_t axis) const;
     Array max(const size_t axis) const;
+
+    void clear() { std::fill(begin(), end(), 0); }
 
 private:
     //--------------------------------------------------------------

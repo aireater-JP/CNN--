@@ -1,5 +1,5 @@
 #pragma once
-#include "Sigmoid.hpp"
+#include "../Sigmoid.hpp"
 
 template <typename T>
 class LSTM
@@ -18,10 +18,10 @@ class LSTM
     Array<T> dC_prev;
     Array<T> dH_prev;
 
-    Array<T> &Wfx, Wfh, Bf, dWfx, dWfh, dBf;
-    Array<T> &Wgx, Wgh, Bg, dWgx, dWgh, dBg;
-    Array<T> &Wix, Wih, Bi, dWix, dWih, dBi;
-    Array<T> &Wox, Woh, Bo, dWox, dWoh, dBo;
+    Array<T> &Wfx, &Wfh, &Bf, &dWfx, &dWfh, &dBf;
+    Array<T> &Wgx, &Wgh, &Bg, &dWgx, &dWgh, &dBg;
+    Array<T> &Wix, &Wih, &Bi, &dWix, &dWih, &dBi;
+    Array<T> &Wox, &Woh, &Bo, &dWox, &dWoh, &dBo;
 
 public:
     LSTM(Array<T> &Wfx, Array<T> &Wfh, Array<T> &Bf, Array<T> &dWfx, Array<T> &dWfh, Array<T> &dBf,
@@ -60,14 +60,14 @@ public:
     {
         Array<T> tanh_C_next = tanh(C_next);
 
-        Array<T> dS = dC_next + (dH_next * O) * (1 - tanh_C_next * tanh_C_next);
+        Array<T> dS = dC_next + (dH_next * O) * (1.0f - tanh_C_next * tanh_C_next);
 
         dC_prev = dS * F;
 
-        Array<T> dI = dS * G * I * (1 - I);
-        Array<T> dF = dS * C_prev * F * (1 - F);
-        Array<T> dO = dH_next * tanh_C_next * O * (1 - O);
-        Array<T> dG = dS * I * (1 - G * G);
+        Array<T> dI = dS * G * I * (1.f - I);
+        Array<T> dF = dS * C_prev * F * (1.f - F);
+        Array<T> dO = dH_next * tanh_C_next * O * (1.f - O);
+        Array<T> dG = dS * I * (1.f - G * G);
 
         Array<T> HT = H_prev.Transpose();
         Array<T> XT = X.Transpose();

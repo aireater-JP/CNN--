@@ -4,46 +4,53 @@
 template <typename T>
 class Time_LSTM
 {
-    std::unique_ptr<LSTM<T>[]> lstms;
-
     size_t current;
 
     Array<T> h, dh;
     Array<T> c, dc;
 
-    Array<T> Wfx, Wfh, Bf, dWfx, dWfh, dBf;
-    Array<T> Wgx, Wgh, Bg, dWgx, dWgh, dBg;
-    Array<T> Wix, Wih, Bi, dWix, dWih, dBi;
-    Array<T> Wox, Woh, Bo, dWox, dWoh, dBo;
+    Array<T> Wfx, Wfh, Bf;
+    Array<T> Wgx, Wgh, Bg;
+    Array<T> Wix, Wih, Bi;
+    Array<T> Wox, Woh, Bo;
 
-    size_t _output_size;
+    Array<T> dWfx, dWfh, dBf;
+    Array<T> dWgx, dWgh, dBg;
+    Array<T> dWix, dWih, dBi;
+    Array<T> dWox, dWoh, dBo;
+
+    std::vector<LSTM<T>> lstms;
+
+    size_t _input_size, _output_size;
 
 public:
-    Time_LSTM(const size_t time, const size_t output_size)
-        : lstms(new LSTM<T>[time](Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo)),
-          _output_size(output_size)
+    Time_LSTM(const size_t time, const size_t input_size, const size_t output_size)
+        : current(0),
+          h({1,output_size}), dh({1,output_size}), c({1,output_size}), dc({1,output_size}),
+          Wfx({input_size, output_size}), Wfh({output_size, output_size}), Bf({output_size}),
+          Wgx({input_size, output_size}), Wgh({output_size, output_size}), Bg({output_size}),
+          Wix({input_size, output_size}), Wih({output_size, output_size}), Bi({output_size}),
+          Wox({input_size, output_size}), Woh({output_size, output_size}), Bo({output_size}),
+
+          dWfx({input_size, output_size}), dWfh({output_size, output_size}), dBf({output_size}),
+          dWgx({input_size, output_size}), dWgh({output_size, output_size}), dBg({output_size}),
+          dWix({input_size, output_size}), dWih({output_size, output_size}), dBi({output_size}),
+          dWox({input_size, output_size}), dWoh({output_size, output_size}), dBo({output_size}),
+          lstms(time, LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo)),
+          _input_size(input_size), _output_size(output_size)
     {
     }
 
     Index initialize(const Index &input_dimension)
     {
-        Wfx = Array<T>({input_dimension.back_access(0), _output_size}), Wfh = Array<T>({_output_size, _output_size}), Bf = Array<T>({_output_size});
-        Wgx = Array<T>({input_dimension.back_access(0), _output_size}), Wgh = Array<T>({_output_size, _output_size}), Bg = Array<T>({_output_size});
-        Wix = Array<T>({input_dimension.back_access(0), _output_size}), Wih = Array<T>({_output_size, _output_size}), Bi = Array<T>({_output_size});
-        Wox = Array<T>({input_dimension.back_access(0), _output_size}), Woh = Array<T>({_output_size, _output_size}), Bo = Array<T>({_output_size});
-
-        dWfx = Array<T>({input_dimension.back_access(0), _output_size}), dWfh = Array<T>({_output_size, _output_size}), dBf = Array<T>({_output_size});
-        dWgx = Array<T>({input_dimension.back_access(0), _output_size}), dWgh = Array<T>({_output_size, _output_size}), dBg = Array<T>({_output_size});
-        dWix = Array<T>({input_dimension.back_access(0), _output_size}), dWih = Array<T>({_output_size, _output_size}), dBi = Array<T>({_output_size});
-        dWox = Array<T>({input_dimension.back_access(0), _output_size}), dWoh = Array<T>({_output_size, _output_size}), dBo = Array<T>({_output_size});
-
         return {input_dimension[0], _output_size};
     }
 
     Array<T> forward(const Array<T> &x)
     {
-        h = lstms[current]->forward(x, h, c);
-        c = lstms[current]->get_c();
+        Array<T> X = reshape({0, _input_size}, x);
+        h = lstms[current].forward(X, h, c);
+        c = lstms[current].get_c();
         current++;
 
         return h;
@@ -51,13 +58,32 @@ public:
 
     Array<T> backward(const Array<T> &dy)
     {
-        Array<T> dx = lstms[current]->backward(dy + dh, dc);
-        dh = lstms[current]->get_dh();
-        dc = lstms[current]->get_dc();
         current--;
-        
+        Array<T> dx = lstms[current].backward(dy + dh, dc);
+        dh = lstms[current].get_dh();
+        dc = lstms[current].get_dc();
+
         return dx;
     }
+
+    void reset()
+    {
+        h.clear();
+        c.clear();
+        dh.clear();
+        dc.clear();
+    }
+
+    Array<T> get_c() { return c; }
+    Array<T> get_dc() { return dc; }
+
+    Array<T> get_h() { return h; }
+    Array<T> get_dh() { return dh; }
+
+    void set_c(const Array<T> &n) { c = n; }
+    void set_dc(const Array<T> &n) { dc = n; }
+    void set_h(const Array<T> &n) { h = n; }
+    void set_dh(const Array<T> &n) { dh = n; }
 
     void update(const T lr)
     {
@@ -75,5 +101,20 @@ public:
         Bi -= dBi * lr;
         Bo -= dBo * lr;
         Bg -= dBg * lr;
+
+        dWfh.clear();
+        dWih.clear();
+        dWoh.clear();
+        dWgh.clear();
+
+        dWfx.clear();
+        dWix.clear();
+        dWox.clear();
+        dWgx.clear();
+
+        dBf.clear();
+        dBi.clear();
+        dBo.clear();
+        dBg.clear();
     }
 };
