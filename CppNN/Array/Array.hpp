@@ -19,7 +19,7 @@ public:
     //--------------------------------------------------------------
     // コンストラクタ
     // デフォルトコンストラクタ
-    Array() : _start(), _dimension(), _stride(), _size(0), _data() {}
+    Array() : _start(0), _dimension(), _stride(), _size(0), _data(nullptr) {}
 
     // 初期化リストによる初期化
     Array(std::initializer_list<size_t> dimension) : Array(Index(dimension)) {};
@@ -49,10 +49,10 @@ public:
     //--------------------------------------------------------------
     // イテレータ
     iterator begin() { return _data.get() + _start; }
-    iterator end() { return _data.get() + _size; }
+    iterator end() { return _data.get() + _start + _size; }
 
     const_iterator begin() const { return _data.get() + _start; }
-    const_iterator end() const { return _data.get() + _size; }
+    const_iterator end() const { return _data.get() + _start + _size; }
 
     //--------------------------------------------------------------
     // 要素アクセス
@@ -87,7 +87,7 @@ public:
     friend void out(const Array<U> &array);
 
     void reshape(const Index &index);
-    Array share(const Index &index = {}) const;
+    Array share(const Index &index = {});
 
     Array Transpose();
     Array sum(const size_t axis);

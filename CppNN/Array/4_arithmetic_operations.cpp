@@ -147,7 +147,7 @@ template <typename T>
 Array<T> operator+(const Array<T> &x, const T y)
 {
     Array<T> res(x);
-    for (const auto &i : res)
+    for (auto &i : res)
         i += y;
 
     return res;
@@ -157,7 +157,7 @@ template <typename T>
 Array<T> operator-(const Array<T> &x, const T y)
 {
     Array<T> res(x);
-    for (const auto &i : res)
+    for (auto &i : res)
         i -= y;
 
     return res;
@@ -167,7 +167,7 @@ template <typename T>
 Array<T> operator*(const Array<T> &x, const T y)
 {
     Array<T> res(x);
-    for (const auto &i : res)
+    for (auto &i : res)
         i *= y;
 
     return res;
@@ -177,7 +177,7 @@ template <typename T>
 Array<T> operator/(const Array<T> &x, const T y)
 {
     Array<T> res(x);
-    for (const auto &i : res)
+    for (auto &i : res)
         i /= y;
 
     return res;
@@ -187,7 +187,7 @@ template <typename T>
 Array<T> operator%(const Array<T> &x, const T y)
 {
     Array<T> res(x);
-    for (const auto &i : res)
+    for (auto &i : res)
         i %= y;
 
     return res;
@@ -209,50 +209,35 @@ template <typename T>
 Array<T> operator+(const T x, const Array<T> &y)
 {
     Array<T> res(y.dimension(), x);
-    for (size_t i = 0; i < res.size(); ++i)
-        res[i] += y[i];
-
-    return res;
+    return res+y;
 }
 
 template <typename T>
 Array<T> operator-(const T x, const Array<T> &y)
 {
     Array<T> res(y.dimension(), x);
-    for (size_t i = 0; i < res.size(); ++i)
-        res[i] -= y[i];
-
-    return res;
+    return res-y;
 }
 
 template <typename T>
 Array<T> operator*(const T x, const Array<T> &y)
 {
     Array<T> res(y.dimension(), x);
-    for (size_t i = 0; i < res.size(); ++i)
-        res[i] *= y[i];
-
-    return res;
+    return res*y;
 }
 
 template <typename T>
 Array<T> operator/(const T x, const Array<T> &y)
 {
     Array<T> res(y.dimension(), x);
-    for (size_t i = 0; i < res.size(); ++i)
-        res[i] /= y[i];
-
-    return res;
+    return res/y;
 }
 
 template <typename T>
 Array<T> operator%(const T x, const Array<T> &y)
 {
     Array<T> res(y.dimension(), x);
-    for (size_t i = 0; i < res.size(); ++i)
-        res[i] %= y[i];
-
-    return res;
+    return res%y;
 }
 
 template <typename T>

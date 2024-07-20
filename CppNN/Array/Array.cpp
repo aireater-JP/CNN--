@@ -197,7 +197,7 @@ Array<T> reshape(const Index &index, const Array<T> &array)
 // 変形
 //--------------------------------------------------------------
 template <typename T>
-Array<T> Array<T>::share(const Index &index) const
+Array<T> Array<T>::share(const Index &index)
 {
     if (index.size() == 0)
     {

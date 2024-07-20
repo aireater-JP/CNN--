@@ -35,4 +35,10 @@ public:
 
         return dot(x, W.Transpose());
     }
+
+    void update(const T learning_rate) override
+    {
+        W = W + dW * learning_rate;
+        B = B + dB * learning_rate;
+    }
 };
