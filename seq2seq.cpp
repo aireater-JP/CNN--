@@ -6,7 +6,7 @@ int main()
 
     Random<std::uniform_int_distribution<>> r(1, 9);
 
-    NN.initialize({0});
+    NN.initialize({1,12});
 
     for (size_t i = 0; i < 100; ++i)
     {
@@ -43,6 +43,6 @@ int main()
             out(NN.gradient(e, Array<float>(), a), "\n");
         }
 
-        NN.update(0.01);
+        NN.update(0.001);
     };
 }

@@ -9,11 +9,9 @@ public:
     virtual Index initialize(const Index &input_dimension) = 0;
 
     virtual Array<T> forward(const Array<T> &x) = 0;
-    virtual Array<T> backward(const Array<T> &x) = 0;
+    virtual Array<T> backward(const Array<T> &dy) = 0;
 
-    virtual void update(const T learning_rate) {};
+    virtual void update(const T lr) {};
 };
-
-#include "Layer/Affine.hpp"
 #include "Layer/ReLU.hpp"
 #include "Layer/Sigmoid.hpp"

@@ -43,6 +43,7 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
+        init();
         return {input_dimension[0], _output_size};
     }
 
@@ -68,6 +69,7 @@ public:
 
     void reset()
     {
+        current = 0;
         h.clear();
         c.clear();
         dh.clear();
@@ -76,7 +78,6 @@ public:
 
     Array<T> get_c() { return c; }
     Array<T> get_dc() { return dc; }
-
     Array<T> get_h() { return h; }
     Array<T> get_dh() { return dh; }
 
@@ -116,5 +117,27 @@ public:
         dBi.clear();
         dBo.clear();
         dBg.clear();
+    }
+
+private:
+    void init()
+    {
+        Random<std::uniform_real_distribution<>> r(-1.0, 1.0);
+        for (auto &i : Wfh)
+            i = r();
+        for (auto &i : Wih)
+            i = r();
+        for (auto &i : Woh)
+            i = r();
+        for (auto &i : Wgh)
+            i = r();
+        for (auto &i : Wfx)
+            i = r();
+        for (auto &i : Wix)
+            i = r();
+        for (auto &i : Wox)
+            i = r();
+        for (auto &i : Wgx)
+            i = r();
     }
 };

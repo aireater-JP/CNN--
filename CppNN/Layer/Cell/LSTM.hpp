@@ -4,10 +4,7 @@
 template <typename T>
 class LSTM
 {
-    Array<T> F;
-    Array<T> G;
-    Array<T> I;
-    Array<T> O;
+    Array<T> F,G,I,O;
 
     Array<T> X;
     Array<T> H_prev;
@@ -33,29 +30,6 @@ public:
           Wix(Wix), Wih(Wih), Bi(Bi), dWix(dWix), dWih(dWih), dBi(dBi),
           Wox(Wox), Woh(Woh), Bo(Bo), dWox(dWox), dWoh(dWoh), dBo(dBo)
     {
-        Random<std::uniform_real_distribution<>> r(-1.0, 1.0);
-        for (auto &i : Wfh)
-            i = r();
-
-        for (auto &i : Wih)
-            i = r();
-        for (auto &i : Woh)
-            i = r();
-
-        for (auto &i : Wgh)
-            i = r();
-
-        for (auto &i : Wfx)
-            i = r();
-
-        for (auto &i : Wix)
-            i = r();
-
-        for (auto &i : Wox)
-            i = r();
-
-        for (auto &i : Wgx)
-            i = r();
     }
 
     Array<T> forward(const Array<T> &x, const Array<T> &h_prev, const Array<T> &c_prev)
