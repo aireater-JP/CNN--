@@ -1,8 +1,8 @@
-#include "../../Time_Layer.hpp"
+#include "../../Layer.hpp"
 #include "../Cell/LSTM.hpp"
 
 template <typename T>
-class Time_LSTM
+class Time_LSTM : public Layer<T>
 {
     size_t current;
 
@@ -26,7 +26,7 @@ class Time_LSTM
 public:
     Time_LSTM(const size_t time, const size_t input_size, const size_t output_size)
         : current(0),
-          h({1,output_size}), dh({1,output_size}), c({1,output_size}), dc({1,output_size}),
+          h({1, output_size}), dh({1, output_size}), c({1, output_size}), dc({1, output_size}),
           Wfx({input_size, output_size}), Wfh({output_size, output_size}), Bf({output_size}),
           Wgx({input_size, output_size}), Wgh({output_size, output_size}), Bg({output_size}),
           Wix({input_size, output_size}), Wih({output_size, output_size}), Bi({output_size}),
@@ -41,12 +41,12 @@ public:
     {
     }
 
-    Index initialize(const Index &input_dimension)
+    Index initialize(const Index &input_dimension) override
     {
         return {input_dimension[0], _output_size};
     }
 
-    Array<T> forward(const Array<T> &x)
+    Array<T> forward(const Array<T> &x) override
     {
         Array<T> X = reshape({0, _input_size}, x);
         h = lstms[current].forward(X, h, c);
@@ -56,7 +56,7 @@ public:
         return h;
     }
 
-    Array<T> backward(const Array<T> &dy)
+    Array<T> backward(const Array<T> &dy) override
     {
         current--;
         Array<T> dx = lstms[current].backward(dy + dh, dc);
@@ -85,7 +85,7 @@ public:
     void set_h(const Array<T> &n) { h = n; }
     void set_dh(const Array<T> &n) { dh = n; }
 
-    void update(const T lr)
+    void update(const T lr) override
     {
         Wfh -= dWfh * lr;
         Wih -= dWih * lr;

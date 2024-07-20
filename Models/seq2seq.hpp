@@ -56,6 +56,8 @@ public:
 
     float gradient(const Array<float> &e, const Array<float> &x, const Array<float> &t)
     {
+        Encoder.reset();
+        Decoder.reset();
         float y = loss(e, x, t);
         Array<float> g = _loss.backward();
         for (size_t i = g.dimension()[0] - 1; i < g.dimension()[0]; --i)
