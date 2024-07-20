@@ -105,6 +105,9 @@ public:
 
     void update(const float lr)
     {
+        e_in.update(lr);
+        d_in.update(lr);
+        d_out.update(lr);
         Decoder.update(lr);
         Encoder.update(lr);
     }
