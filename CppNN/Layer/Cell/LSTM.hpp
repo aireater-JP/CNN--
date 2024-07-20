@@ -94,11 +94,6 @@ public:
         return dX;
     }
 
-    Array<T> get_h()
-    {
-        return H_next;
-    }
-
     Array<T> get_c()
     {
         return C_next;

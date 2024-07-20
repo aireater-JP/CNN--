@@ -42,12 +42,11 @@ public:
 
     Array<T> forward(const Array<T> &x)
     {
-        Array<T> y = lstms[current]->forward(x, h, c);
-        h = lstms[current]->get_h();
+        h = lstms[current]->forward(x, h, c);
         c = lstms[current]->get_c();
         current++;
 
-        return y;
+        return h;
     }
 
     Array<T> backward(const Array<T> &dy)
@@ -56,6 +55,7 @@ public:
         dh = lstms[current]->get_dh();
         dc = lstms[current]->get_dc();
         current--;
+        
         return dx;
     }
 
