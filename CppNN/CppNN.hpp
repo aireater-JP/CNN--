@@ -41,6 +41,7 @@ public:
         Array<float> y = x;
         for (auto &i : _layer)
             y = i->forward(y);
+
         return y;
     }
 
@@ -49,7 +50,7 @@ public:
         return _loss->forward(predict(x), t);
     }
 
-    float gradient(const Array<float> &x, const Array<float> &t)
+    float gradient(const Array<float> &x, const Array<float> &t, const float lr)
     {
         float y = loss(x, t);
         Array<float> g = _loss->backward();
@@ -57,12 +58,9 @@ public:
         for (size_t i = _layer.size() - 1; i < _layer.size(); i--)
             g = _layer[i]->backward(g);
 
-        return y;
-    }
-
-    void update(const float lr)
-    {
         for (auto &i : _layer)
             i->update(lr);
+
+        return y;
     }
 };

@@ -16,13 +16,13 @@ Array<T>::Array(Index &&dimension, const T &value) noexcept : Array(dimension)
 }
 
 template <typename T>
-Array<T>::Array(const Array &array) : _start(0), _dimension(array._dimension), _stride(array._stride), _size(array._size), _data(new T[_size])
+Array<T>::Array(const Array &array) : _dimension(array._dimension), _stride(array._stride), _size(array._size), _data(new T[_size])
 {
     std::copy(array.begin(), array.end(), begin());
 }
 
 template <typename T>
-Array<T>::Array(Array &&array) noexcept : _start(array._start), _dimension(std::move(array._dimension)), _stride(std::move(array._stride)), _size(array._size), _data(std::move(array._data))
+Array<T>::Array(Array &&array) noexcept : _dimension(std::move(array._dimension)), _stride(std::move(array._stride)), _size(array._size), _data(std::move(array._data))
 {
     array._size = 0;
 }
@@ -35,7 +35,6 @@ Array<T> &Array<T>::operator=(const Array &array)
 {
     if (this != &array)
     {
-        _start = 0;
         _dimension = array._dimension;
         _stride = array._stride;
         _size = array._size;
@@ -50,7 +49,6 @@ Array<T> &Array<T>::operator=(Array &&array) noexcept
 {
     if (this != &array)
     {
-        _start = array._start;
         _dimension = std::move(array._dimension);
         _stride = std::move(array._stride);
         _size = array._size;
@@ -197,20 +195,8 @@ Array<T> reshape(const Index &index, const Array<T> &array)
 // 変形
 //--------------------------------------------------------------
 template <typename T>
-Array<T> Array<T>::share(const Index &index)
+Array<T> Array<T>::cut(const Index &index) const
 {
-    if (index.size() == 0)
-    {
-        Array<T> res;
-        res._start = _start;
-        res._dimension = _dimension;
-        res._stride = _stride;
-        res._size = _size;
-        res._data = _data;
-
-        return res;
-    }
-
     size_t start = 0;
     Index idx(_dimension.size() - index.size());
     for (size_t i = 0; i < index.size(); ++i)
@@ -223,11 +209,11 @@ Array<T> Array<T>::share(const Index &index)
         idx.back_access(i) = _dimension.back_access(i);
 
     Array<T> res;
-    res._start = start;
     res._dimension = idx;
     res._stride = res.calculate_stride(idx);
     res._size = res.calculate_size(idx);
-    res._data = _data;
+    res._data.reset(new T[res._size]);
+    std::copy((begin() + start), (begin() + start + res._size), res.begin());
 
     return res;
 }
@@ -251,7 +237,7 @@ template <typename T>
 Array<T> Array<T>::sum(const size_t axis) const
 {
     Index dim = _dimension;
-    dim[axis] = 1;
+    dim.back_access(axis) = 1;
     Array<T> res(dim);
 
     for (size_t i = 0; i < _size; ++i)
@@ -267,7 +253,7 @@ template <typename T>
 Array<T> Array<T>::max(const size_t axis) const
 {
     Index dim = _dimension;
-    dim[axis] = 1;
+    dim.back_access(axis) = 1;
     Array<T> res(dim);
 
     for (size_t i = 0; i < _size; ++i)

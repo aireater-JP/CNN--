@@ -14,10 +14,10 @@ typedef enum
 
 class mnist
 {
-    Array<float> trai_label;
+    Array<size_t> trai_label;
     Array<float> trai_img;
 
-    Array<float> test_label;
+    Array<size_t> test_label;
     Array<float> test_img;
 
 public:
@@ -30,7 +30,7 @@ public:
         test_img = load_img(10000, "MNIST/t10k-images.idx3-ubyte");
     }
 
-    float get_label(const size_t id, const MNIST_GET_TYPE t) const
+    size_t get_label(const size_t id, const MNIST_GET_TYPE t) const
     {
         if (t == TRAI)
             return trai_label[id];
@@ -40,12 +40,12 @@ public:
     Array<float> get_img(const size_t id, const MNIST_GET_TYPE t)
     {
         if (t == TRAI)
-            return trai_img.share({id});
-        return test_img.share({id});
+            return trai_img.cut({id});
+        return test_img.cut({id});
     }
 
 private:
-    Array<float> load_label(const size_t size, const std::string &name)
+    Array<size_t> load_label(const size_t size, const std::string &name)
     {
         std::ifstream ifs;
         ifs.open(name, std::ios::binary);
@@ -53,7 +53,7 @@ private:
         ifs.seekg(8, std::ios::beg);
 
         Array<unsigned char> temp({size});
-        Array<float> res({size});
+        Array<size_t> res({size});
 
         ifs.read(reinterpret_cast<char *>(&temp[0]), size);
 

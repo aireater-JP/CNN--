@@ -20,7 +20,12 @@ public:
     }
     Array<T> backward(const Array<T> &x) override
     {
-        Array<T> y = x * (1.0f - _output_cash) * _output_cash;
-        return y;
+        return x * (1.0f - _output_cash) * _output_cash;
     }
 };
+
+template <typename T>
+Array<T> sigmoid(const Array<T> &x)
+{
+    return 1.0f / (1.0f + exp(-x));
+}

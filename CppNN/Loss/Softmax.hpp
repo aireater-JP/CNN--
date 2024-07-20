@@ -26,14 +26,12 @@ public:
 private:
     Array<T> Softmax(const Array<T> &x)
     {
-        Array<T> exp_temp = exp(x - max(x));
-        return exp_temp / sum(exp_temp);
+        Array<T> exp_temp = exp(x - x.max(0));
+        return exp_temp / exp_temp.sum(0);
     }
 
     T cross_entropy_error(const Array<T> &x, const Array<T> &teacher)
     {
-        T y = sum(teacher * log(x) - T(DBL_MIN));
-
-        return -y / (x.size() / x.dimension().back_access(0));
+        return -sum(teacher * log(x + T(FLT_MIN))) / (x.size() / x.dimension().back_access(0));
     }
 };

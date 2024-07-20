@@ -1,5 +1,6 @@
 #pragma once
 #include "Array/Array.hpp"
+#include "Random.hpp"
 
 template <typename T>
 class Layer

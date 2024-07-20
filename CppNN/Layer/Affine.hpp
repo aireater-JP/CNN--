@@ -21,6 +21,10 @@ public:
         W = Array<T>({input_dimension.back_access(0), _output_size});
         B = Array<T>({_output_size});
 
+        Random<std::uniform_real_distribution<>> r(-1.0, 1.0);
+        for (auto &i : W)
+            i = r();
+
         return {input_dimension[0], _output_size};
     }
 
@@ -33,15 +37,15 @@ public:
 
     Array<T> backward(const Array<T> &x) override
     {
-        dW = dW + dot(_input_cash.Transpose(), x);
-        dB = dB + x.sum(0);
+        dW = dot(_input_cash.Transpose(), x);
+        dB = x.sum(1);
 
         return dot(x, W.Transpose());
     }
 
     void update(const T learning_rate) override
     {
-        W = W + dW * learning_rate;
-        B = B + dB * learning_rate;
+        W = W - dW * learning_rate;
+        B = B - dB * learning_rate;
     }
 };

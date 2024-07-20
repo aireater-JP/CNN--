@@ -9,7 +9,6 @@ class Array
     using const_iterator = const T *;
 
 private:
-    size_t _start;
     Index _dimension;
     Index _stride;
     size_t _size;
@@ -19,14 +18,14 @@ public:
     //--------------------------------------------------------------
     // コンストラクタ
     // デフォルトコンストラクタ
-    Array() : _start(0), _dimension(), _stride(), _size(0), _data(nullptr) {}
+    Array() : _dimension(), _stride(), _size(0), _data(nullptr) {}
 
     // 初期化リストによる初期化
     Array(std::initializer_list<size_t> dimension) : Array(Index(dimension)) {};
 
     // 次元を指定して初期化
-    Array(const Index &dimension) : _start(0), _dimension(dimension), _stride(calculate_stride(_dimension)), _size(calculate_size(_dimension)), _data(new T[_size]()) {}
-    Array(Index &&dimension) noexcept : _start(0), _dimension(std::move(dimension)), _stride(calculate_stride(_dimension)), _size(calculate_size(_dimension)), _data(new T[_size]()) {}
+    Array(const Index &dimension) : _dimension(dimension), _stride(calculate_stride(_dimension)), _size(calculate_size(_dimension)), _data(new T[_size]()) {}
+    Array(Index &&dimension) noexcept : _dimension(std::move(dimension)), _stride(calculate_stride(_dimension)), _size(calculate_size(_dimension)), _data(new T[_size]()) {}
 
     // 次元と初期値を指定して初期化
     Array(const Index &dimension, const T &value);
@@ -48,19 +47,19 @@ public:
 
     //--------------------------------------------------------------
     // イテレータ
-    iterator begin() { return _data.get() + _start; }
-    iterator end() { return _data.get() + _start + _size; }
+    iterator begin() { return _data.get(); }
+    iterator end() { return _data.get() + _size; }
 
-    const_iterator begin() const { return _data.get() + _start; }
-    const_iterator end() const { return _data.get() + _start + _size; }
+    const_iterator begin() const { return _data.get(); }
+    const_iterator end() const { return _data.get() + _size; }
 
     //--------------------------------------------------------------
     // 要素アクセス
-    T &operator[](const Index &index) { return _data[calculate_mul_to_one(index) + _start]; }
-    const T &operator[](const Index &index) const { return _data[calculate_mul_to_one(index) + _start]; }
+    T &operator[](const Index &index) { return _data[calculate_mul_to_one(index)]; }
+    const T &operator[](const Index &index) const { return _data[calculate_mul_to_one(index)]; }
 
-    T &operator[](const size_t &index) { return _data[index + _start]; }
-    const T &operator[](const size_t &index) const { return _data[index + _start]; }
+    T &operator[](const size_t &index) { return _data[index]; }
+    const T &operator[](const size_t &index) const { return _data[index]; }
 
     //--------------------------------------------------------------
     // 比較演算子
@@ -87,7 +86,7 @@ public:
     friend void out(const Array<U> &array);
 
     void reshape(const Index &index);
-    Array share(const Index &index = {});
+    Array cut(const Index &index = {}) const;
 
     Array Transpose();
     Array sum(const size_t axis) const;
