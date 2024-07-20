@@ -37,15 +37,18 @@ public:
 
     Array<T> backward(const Array<T> &x) override
     {
-        dW = dot(_input_cash.Transpose(), x);
-        dB = x.sum(1);
+        dW += dot(_input_cash.Transpose(), x);
+        dB += x.sum(1);
 
         return dot(x, W.Transpose());
     }
 
     void update(const T learning_rate) override
     {
-        W = W - dW * learning_rate;
-        B = B - dB * learning_rate;
+        W -= dW * learning_rate;
+        B -= dB * learning_rate;
+
+        dW = Array<T>;
+        dB = Array<T>;
     }
 };

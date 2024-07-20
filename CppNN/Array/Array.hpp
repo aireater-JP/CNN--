@@ -81,6 +81,12 @@ public:
     template <typename U>
     friend Array<U> operator^(const Array<U> &x, const Array<U> &y);
 
+    Array &operator+=(const Array &x) { return *this + x; }
+    Array &operator-=(const Array &x) { return *this - x; }
+    Array &operator*=(const Array &x) { return *this * x; }
+    Array &operator/=(const Array &x) { return *this / x; }
+    Array &operator^=(const Array &x) { return *this ^ x; }
+
     // 出力
     template <typename U>
     friend void out(const Array<U> &array);
