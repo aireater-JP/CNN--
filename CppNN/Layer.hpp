@@ -12,3 +12,7 @@ public:
 
     virtual void update(const T learning_rate) {};
 };
+
+#include "Layer/Affine.hpp"
+#include "Layer/ReLU.hpp"
+#include "Layer/Sigmoid.hpp"

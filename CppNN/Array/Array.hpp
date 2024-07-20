@@ -90,7 +90,8 @@ public:
     Array share(const Index &index = {});
 
     Array Transpose();
-    Array sum(const size_t axis);
+    Array sum(const size_t axis) const;
+    Array max(const size_t axis) const;
 
 private:
     //--------------------------------------------------------------

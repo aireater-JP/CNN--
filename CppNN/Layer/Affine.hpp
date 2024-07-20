@@ -18,6 +18,9 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
+        W = Array<T>({input_dimension.back_access(0), _output_size});
+        B = Array<T>({_output_size});
+
         return {input_dimension[0], _output_size};
     }
 
@@ -30,8 +33,8 @@ public:
 
     Array<T> backward(const Array<T> &x) override
     {
-        dW = dot(_input_cash.Transpose(), x);
-        dB = sum(x, 0);
+        dW = dW + dot(_input_cash.Transpose(), x);
+        dB = dB + x.sum(0);
 
         return dot(x, W.Transpose());
     }

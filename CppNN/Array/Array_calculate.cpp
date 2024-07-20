@@ -21,6 +21,16 @@ Array<T> tanh(const Array<T> &x)
 }
 
 template <typename T>
+Array<T> log(const Array<T> &x)
+{
+    Array<T> res(x.dimension());
+    for (size_t i = 0; i < res.size(); ++i)
+        res[i] = std::log(x[i]);
+
+    return res;
+}
+
+template <typename T>
 Array<T> operator+(const Array<T> &x)
 {
     return x;

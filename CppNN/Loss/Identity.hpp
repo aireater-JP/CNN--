@@ -17,7 +17,7 @@ public:
 
     Array<T> backward() override
     {
-        return Identity_output_cash - teacher_cash
+        return Identity_output_cash - teacher_cash;
     }
 
 private:

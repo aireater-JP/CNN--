@@ -248,7 +248,7 @@ Array<T> Array<T>::Transpose()
 }
 
 template <typename T>
-Array<T> Array<T>::sum(const size_t axis)
+Array<T> Array<T>::sum(const size_t axis) const
 {
     Index dim = _dimension;
     dim[axis] = 1;
@@ -260,5 +260,39 @@ Array<T> Array<T>::sum(const size_t axis)
         res[res.broadcast_to_Index(idx)] += operator[](idx);
     }
 
+    return res;
+}
+
+template <typename T>
+Array<T> Array<T>::max(const size_t axis) const
+{
+    Index dim = _dimension;
+    dim[axis] = 1;
+    Array<T> res(dim);
+
+    for (size_t i = 0; i < _size; ++i)
+    {
+        Index idx = calculate_one_to_mul(i);
+        res[res.broadcast_to_Index(idx)] = std::max(res[res.broadcast_to_Index(idx)], operator[](idx));
+    }
+
+    return res;
+}
+
+template <typename T>
+T sum(const Array<T> &x)
+{
+    T res = 0;
+    for (const auto &i : x)
+        res += i;
+    return res;
+}
+
+template <typename T>
+T max(const Array<T> &x)
+{
+    T res = 0;
+    for (const auto &i : x)
+        res = std::max(res, i);
     return res;
 }
