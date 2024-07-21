@@ -3,12 +3,13 @@
 template <typename T>
 class WeightSum
 {
-    Array<T> hs_cash, a_cash;
+    Array<T> a_cash;
 
-    Array<T> da(a_cash.dimension());
-    Array<T> dhs(hs_cash.dimension());
+    Array<T> da, dhs;
 
 public:
+    WeightSum(const Index &hs_s, const Index &a_s) : dhs(hs_s), da(a_s) {}
+
     Array<T> forward(const Array<T> &hs, const Array<T> &a) override
     {
         Array<T> c({a.size()});
@@ -17,21 +18,24 @@ public:
             for (size_t j = 0; j < hs.dimension()[1]; ++j)
                 c[j] += hs[{i, j}] * a[j];
 
-        hs_cash = hs;
         a_cash = a;
 
         return c;
     }
 
-    Array<T> backward(const Array<T> &dc) override
+    Array<T> backward(const Array<T> &hs, const Array<T> &dc) override
     {
-        for (size_t i = 0; i < hs_cash.dimension()[0]; ++i)
-            for (size_t j = 0; j < hs_cash.dimension()[1]; ++j)
+        for (size_t i = 0; i < hs.dimension()[0]; ++i)
+            for (size_t j = 0; j < hs.dimension()[1]; ++j)
             {
-                da[j] += hs_cash[{i, j}] * dc[j];
+                da[j] += hs[{i, j}] * dc[j];
                 dhs[{i, j}] = a_cash[j] * dc[j];
             }
+        return da;
+    }
 
+    Array<T> get_dhs()
+    {
         return dhs;
     }
 };

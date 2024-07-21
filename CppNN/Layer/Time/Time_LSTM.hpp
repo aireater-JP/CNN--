@@ -4,8 +4,6 @@
 template <typename T>
 class Time_LSTM : public Layer<T>
 {
-    size_t current;
-
     Array<T> h, dh;
     Array<T> c, dc;
 
@@ -24,7 +22,7 @@ class Time_LSTM : public Layer<T>
     size_t _input_size, _hidden_size;
 
 public:
-    Time_LSTM(const size_t hidden_size) : current(0), _hidden_size(hidden_size) {}
+    Time_LSTM(const size_t hidden_size) : _hidden_size(hidden_size) {}
 
     Index initialize(const Index &input_dimension) override
     {
@@ -39,22 +37,30 @@ public:
 
     Array<T> forward(const Array<T> &x) override
     {
-        Array<T> X = reshape({0, _input_size}, x);
-        h = lstms[current].forward(X, h, c);
-        c = lstms[current].get_c();
-        current++;
-
-        return h;
+        Array<float> res({x.dimension()[0], _hidden_size});
+        for (size_t i = 0; i < x.dimension()[0]; ++i)
+        {
+            h = lstms[i].forward(reshape({0, _input_size}, x.cut({i})), h, c);
+            c = lstms[i].get_c();
+            std::copy(h.begin(), h.end(), (res.begin() + i * _hidden_size));
+        }
+        return res;
     }
 
     Array<T> backward(const Array<T> &dy) override
     {
-        current--;
-        Array<T> dx = lstms[current].backward(dy + dh, dc);
-        dh = lstms[current].get_dh();
-        dc = lstms[current].get_dc();
+        Array<float> res(dy.dimension()[0], _input_size);
+        Array<float> dx;
+        for (size_t i = 0; i < dy.dimension()[0]; ++i)
+        {
+            dx = lstms[i].backward(dy.cut({i}) + dh, dc);
+            dh = lstms[i].get_dh();
+            dc = lstms[i].get_dc();
 
-        return dx;
+            std::copy(dx.begin(), dx.end(), (res.begin() + i * _input_size));
+        }
+
+        return res;
     }
 
     Array<T> get_h() { return h; }
@@ -94,8 +100,6 @@ public:
         dBi.clear();
         dBo.clear();
         dBg.clear();
-
-        current = 0;
     }
 
     void reset()

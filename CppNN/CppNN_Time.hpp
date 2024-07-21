@@ -12,8 +12,6 @@ class CppNN_Time
 
     bool is_initialized = false;
 
-    Array<float> res;
-
     size_t output_size;
 
 public:
@@ -39,14 +37,14 @@ public:
 
     Array<float> predict(const Array<float> &x)
     {
-        res.clear();
+        Array<float> res(x.dimension()[0], output_size);
         Array<float> y;
         for (size_t i = 0; i < x.dimension()[0]; ++i)
         {
             y = x.cut({i});
             for (size_t j = 0; j < _layer.size(); ++j)
             {
-                y = _layer[i]->forward(y);
+                y = _layer[j]->forward(y);
             }
             std::copy(y.begin(), y.end(), (res.begin() + i * output_size));
         }
@@ -55,17 +53,18 @@ public:
 
     Array<float> gradient(const Array<float> &dy)
     {
+        Array<float> res(dy.dimension()[0], output_size);
         Array<float> dx;
         for (size_t i = dy.dimension()[0] - 1; i < dy.dimension()[0]; --i)
         {
             dx = dy.cut({i});
-            for (size_t j = _layer.size() - 1; j < _layer.size(); --i)
+            for (size_t j = _layer.size() - 1; j < _layer.size(); --j)
             {
-                dx = _layer[i]->backward(dx);
+                dx = _layer[j]->backward(dx);
             }
+            std::copy(dx.begin(), dx.end(), (res.begin() + i * output_size));
         }
-
-        return dx;
+        return res;
     }
 
     void update(const float lr)
