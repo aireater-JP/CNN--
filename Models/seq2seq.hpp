@@ -10,8 +10,8 @@ class seq2seq
     CppNN_Time d_out;
 
     Array<float> res;
-    size_t _e_t, _d_t, en_out_size;
-    Index en_in_size, de_out_size;
+    size_t e_t, d_t, data_size, hidden_size;
+    size_t en_out_size;
 
     Time_LSTM<float> Encoder;
     Time_LSTM<float> Decoder;
@@ -21,14 +21,17 @@ class seq2seq
     float batch_size = 0;
 
 public:
-    seq2seq(const size_t e_t, const size_t d_t, const Index &en_in_size, const Index &de_out_size, const size_t hidden_size)
-        : _e_t(e_t), _d_t(d_t), en_in_size(en_in_size), de_out_size(de_out_size),
-          Encoder(e_t, hidden_size), Decoder(d_t, hidden_size)
+    seq2seq(const size_t e_t, const size_t d_t, const size_t &data_size, const size_t hidden_size, CppNN_Time e_in, CppNN_Time e_out, CppNN_Time d_in, CppNN_Time d_out)
+        : e_in(e_in), e_out(e_out), d_in(d_in), d_out(d_out),
+          e_t(e_t), d_t(d_t), data_size(data_size), hidden_size(hidden_size),
+          Encoder(hidden_size), Decoder(hidden_size)
     {
     }
 
-    void initialize(const Index &input_size)
+    void initialize()
     {
+        en_out_size = e_out.initialize(Encoder.initialize(e_in.initialize({e_t, data_size}))).back_access(0);
+        d_out.initialize(Decoder.initialize(d_in.initialize({d_t, data_size})));
     }
 
     Array<float> predict(const Array<float> &e, const Array<float> &x)
@@ -39,7 +42,6 @@ public:
         e_out.predict(Encoder.forward(e_in.predict(e)));
 
         Decoder.set_h(Encoder.get_h());
-        Decoder.set_c(Encoder.get_c());
 
         return d_out.predict(Decoder.forward(d_in.predict(x)));
     }
@@ -57,9 +59,8 @@ public:
         d_in.gradient(Decoder.backward(d_out.gradient(g)));
 
         Encoder.set_dh(Decoder.get_dh());
-        Encoder.set_dc(Decoder.get_dc());
 
-        e_in.gradient(Encoder.backward(e_out.gradient(Array<float>({_e_t, en_out_size}))));
+        e_in.gradient(Encoder.backward(e_out.gradient(Array<float>({e_t, en_out_size}))));
 
         batch_size++;
 

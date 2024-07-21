@@ -24,18 +24,17 @@ class Time_LSTM : public Layer<T>
     size_t _input_size, _hidden_size;
 
 public:
-    Time_LSTM(const size_t time, const size_t hidden_size)
-        : current(0),
-          lstms(time, LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo)),
-          _hidden_size(hidden_size)
-    {
-    }
+    Time_LSTM(const size_t hidden_size) : current(0), _hidden_size(hidden_size) {}
 
     Index initialize(const Index &input_dimension) override
     {
+        lstms(input_dimension[0], LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo));
+
         _input_size = input_dimension.back_access(0);
+
         init();
-        return {1, _hidden_size};
+
+        return {input_dimension[0], _hidden_size};
     }
 
     Array<T> forward(const Array<T> &x) override
@@ -58,13 +57,9 @@ public:
         return dx;
     }
 
-    Array<T> get_c() { return c; }
-    Array<T> get_dc() { return dc; }
     Array<T> get_h() { return h; }
     Array<T> get_dh() { return dh; }
 
-    void set_c(const Array<T> &n) { c = n; }
-    void set_dc(const Array<T> &n) { dc = n; }
     void set_h(const Array<T> &n) { h = n; }
     void set_dh(const Array<T> &n) { dh = n; }
 
@@ -99,11 +94,12 @@ public:
         dBi.clear();
         dBo.clear();
         dBg.clear();
+
+        current = 0;
     }
 
     void reset()
     {
-        current = 0;
         h.clear();
         c.clear();
         dh.clear();

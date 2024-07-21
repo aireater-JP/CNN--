@@ -12,15 +12,17 @@ class Time_Affine : public Layer<T>
 
     std::vector<Cell_Affine<T>> affines;
 
-    size_t _time, _input_size, _output_size;
+    size_t _input_size, _output_size;
 
     size_t current;
 
 public:
-    Time_Affine(const size_t time, const size_t output_size) : affines(time, Cell_Affine<T>(W, dW, B, dB)), _time(_time), _output_size(output_size), current(0) {}
+    Time_Affine(const size_t output_size) : _output_size(output_size), current(0) {}
 
     Index initialize(const Index &input_dimension) override
     {
+        affines(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
+
         _input_size = input_dimension.back_access(0);
         W = Array<T>({_input_size, _output_size});
         dW = Array<T>({_input_size, _output_size});
@@ -31,7 +33,7 @@ public:
         for (auto &i : W)
             i = r();
 
-        return {1, _output_size};
+        return {input_dimension[0], _output_size};
     }
 
     Array<T> forward(const Array<T> &x) override
@@ -52,6 +54,8 @@ public:
 
     void update(const T lr) override
     {
+        current = 0;
+
         W -= dW * lr;
         B -= dB * lr;
 

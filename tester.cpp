@@ -20,5 +20,4 @@ int main(){
 
     test.forward(x,t);
     out(test.backward());
-
 }

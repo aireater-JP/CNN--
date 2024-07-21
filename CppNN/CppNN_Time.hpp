@@ -23,7 +23,7 @@ public:
         is_initialized = false;
     }
 
-    void initialize(const Index &input_size)
+    Index initialize(const Index &input_size)
     {
         Index x = input_size;
         for (auto &i : _layer)
@@ -32,15 +32,17 @@ public:
         output_size = x.back_access(0);
 
         is_initialized = true;
+
+        return x;
     }
 
-    Array<float> predict(const Array<float> &e)
+    Array<float> predict(const Array<float> &x)
     {
         res.clear();
         Array<float> y;
-        for (size_t i = 0; i < e.dimension()[0]; ++i)
+        for (size_t i = 0; i < x.dimension()[0]; ++i)
         {
-            y = e.cut({i});
+            y = x.cut({i});
             for (size_t j = 0; j < _layer.size(); ++j)
             {
                 y = _layer[i]->forward(y);
@@ -50,19 +52,19 @@ public:
         return res;
     }
 
-    Array<float> gradient(const Array<float> &x)
+    Array<float> gradient(const Array<float> &dy)
     {
-        Array<float> y;
-        for (size_t i = x.dimension()[0] - 1; i < x.dimension()[0]; --i)
+        Array<float> dx;
+        for (size_t i = dy.dimension()[0] - 1; i < dy.dimension()[0]; --i)
         {
-            y = x.cut({i});
+            dx = dy.cut({i});
             for (size_t j = _layer.size() - 1; j < _layer.size(); --i)
             {
-                y = _layer[i]->backward(y);
+                dx = _layer[i]->backward(dx);
             }
         }
 
-        return y;
+        return dx;
     }
 
     void update(const float lr)

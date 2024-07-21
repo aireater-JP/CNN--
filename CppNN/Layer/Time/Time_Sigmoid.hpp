@@ -1,0 +1,37 @@
+#pragma once
+#include "../../Layer.hpp"
+
+template <typename T>
+class Time_Sigmoid : public Layer<T>
+{
+    std::vector<Sigmoid<T>> Sigmoids;
+
+    size_t current;
+
+public:
+    Time_ReLU() : current(0) {}
+
+    Index initialize(const Index &input_dimension) override
+    {
+        Sigmoids = std::vector<Sigmoid<T>>(input_dimension[0], Sigmoid<T>());
+
+        return input_dimension;
+    }
+
+    Array<T> forward(const Array<T> &x) override
+    {
+        current++;
+        return Sigmoid[current].forward(x);
+    }
+
+    Array<T> backward(const Array<T> &dy) override
+    {
+        current--;
+        return Sigmoid[current].backward(dy);
+    }
+
+    void update(const T lr) override
+    {
+        current = 0;
+    }
+};
