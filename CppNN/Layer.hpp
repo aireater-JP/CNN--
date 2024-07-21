@@ -13,5 +13,6 @@ public:
 
     virtual void update(const T lr) {};
 };
+
 #include "Layer/ReLU.hpp"
 #include "Layer/Sigmoid.hpp"

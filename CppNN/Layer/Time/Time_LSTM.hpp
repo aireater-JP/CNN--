@@ -21,30 +21,21 @@ class Time_LSTM : public Layer<T>
 
     std::vector<LSTM<T>> lstms;
 
-    size_t _input_size, _output_size;
+    size_t _input_size, _hidden_size;
 
 public:
-    Time_LSTM(const size_t time, const size_t input_size, const size_t output_size)
+    Time_LSTM(const size_t time, const size_t hidden_size)
         : current(0),
-          h({1, output_size}), dh({1, output_size}), c({1, output_size}), dc({1, output_size}),
-          Wfx({input_size, output_size}), Wfh({output_size, output_size}), Bf({output_size}),
-          Wgx({input_size, output_size}), Wgh({output_size, output_size}), Bg({output_size}),
-          Wix({input_size, output_size}), Wih({output_size, output_size}), Bi({output_size}),
-          Wox({input_size, output_size}), Woh({output_size, output_size}), Bo({output_size}),
-
-          dWfx({input_size, output_size}), dWfh({output_size, output_size}), dBf({output_size}),
-          dWgx({input_size, output_size}), dWgh({output_size, output_size}), dBg({output_size}),
-          dWix({input_size, output_size}), dWih({output_size, output_size}), dBi({output_size}),
-          dWox({input_size, output_size}), dWoh({output_size, output_size}), dBo({output_size}),
           lstms(time, LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo)),
-          _input_size(input_size), _output_size(output_size)
+          _hidden_size(hidden_size)
     {
     }
 
     Index initialize(const Index &input_dimension) override
     {
+        _input_size = input_dimension.back_access(0);
         init();
-        return {input_dimension[0], _output_size};
+        return {1, _hidden_size};
     }
 
     Array<T> forward(const Array<T> &x) override
@@ -65,15 +56,6 @@ public:
         dc = lstms[current].get_dc();
 
         return dx;
-    }
-
-    void reset()
-    {
-        current = 0;
-        h.clear();
-        c.clear();
-        dh.clear();
-        dc.clear();
     }
 
     Array<T> get_c() { return c; }
@@ -119,9 +101,48 @@ public:
         dBg.clear();
     }
 
+    void reset()
+    {
+        current = 0;
+        h.clear();
+        c.clear();
+        dh.clear();
+        dc.clear();
+    }
+
 private:
     void init()
     {
+        h = Array<T>({1, _hidden_size});
+        dh = Array<T>({1, _hidden_size});
+        c = Array<T>({1, _hidden_size});
+        dc = Array<T>({1, _hidden_size});
+        Wfx = Array<T>({_input_size, _hidden_size});
+        Wfh = Array<T>({_hidden_size, _hidden_size});
+        Bf = Array<T>({_hidden_size});
+        Wgx = Array<T>({_input_size, _hidden_size});
+        Wgh = Array<T>({_hidden_size, _hidden_size});
+        Bg = Array<T>({_hidden_size});
+        Wix = Array<T>({_input_size, _hidden_size});
+        Wih = Array<T>({_hidden_size, _hidden_size});
+        Bi = Array<T>({_hidden_size});
+        Wox = Array<T>({_input_size, _hidden_size});
+        Woh = Array<T>({_hidden_size, _hidden_size});
+        Bo = Array<T>({_hidden_size});
+
+        dWfx = Array<T>({_input_size, _hidden_size});
+        dWfh = Array<T>({_hidden_size, _hidden_size});
+        dBf = Array<T>({_hidden_size});
+        dWgx = Array<T>({_input_size, _hidden_size});
+        dWgh = Array<T>({_hidden_size, _hidden_size});
+        dBg = Array<T>({_hidden_size});
+        dWix = Array<T>({_input_size, _hidden_size});
+        dWih = Array<T>({_hidden_size, _hidden_size});
+        dBi = Array<T>({_hidden_size});
+        dWox = Array<T>({_input_size, _hidden_size});
+        dWoh = Array<T>({_hidden_size, _hidden_size});
+        dBo = Array<T>({_hidden_size});
+
         Random<std::uniform_real_distribution<>> r(-1.0, 1.0);
         for (auto &i : Wfh)
             i = r();
