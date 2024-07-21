@@ -2,6 +2,7 @@
 
 #include "../CppNN/Layer/Time/Time_LSTM.hpp"
 #include "../CppNN/Layer/Time/Time_Affine.hpp"
+#include "../CppNN/Layer/Time/Time_Attention.hpp"
 
 #include "Loss.hpp"
 

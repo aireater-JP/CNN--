@@ -16,6 +16,8 @@ class seq2seq
     Time_LSTM<float> Encoder;
     Time_LSTM<float> Decoder;
 
+    Time_Attention<float> attention;
+
     std::unique_ptr<Loss<float>> _loss;
 
     float batch_size = 0;
