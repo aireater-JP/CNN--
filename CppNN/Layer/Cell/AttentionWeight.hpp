@@ -7,6 +7,8 @@ class AttentionWeight
 
     Array<T> dhs, dh;
 
+    Softmax<T> s;
+
 public:
     AttentionWeight(const Index &hs_s, const Index &h_s) : dhs(hs_s), dh(h_s) {}
 
@@ -20,22 +22,21 @@ public:
 
         h_cash = h;
 
-        return a;
+        return s.forward(a);
     }
 
     Array<T> backward(const Array<T> &hs, const Array<T> &da) override
     {
+        Array<float> ds = s.backward(da);
+
         for (size_t i = 0; i < hs_cash.dimension()[0]; ++i)
             for (size_t j = 0; j < hs_cash.dimension()[1]; ++j)
             {
-                dhs[{i, j}] = a[j] * h_cash[j];
-                dh[j] += a[j] * hs[{i, j}];
+                dhs[{i, j}] = ds[j] * h_cash[j];
+                dh[j] += ds[j] * hs[{i, j}];
             }
         return dh;
     }
 
-    Array<T> get_dhs()
-    {
-        return dhs;
-    }
+    Array<T> get_dhs() { return dhs; }
 };

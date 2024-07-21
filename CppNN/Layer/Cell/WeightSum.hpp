@@ -34,8 +34,5 @@ public:
         return da;
     }
 
-    Array<T> get_dhs()
-    {
-        return dhs;
-    }
+    Array<T> get_dhs() { return dhs; }
 };

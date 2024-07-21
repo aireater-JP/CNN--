@@ -16,7 +16,6 @@ class Attention
 
     std::unique_ptr<Loss<float>> _loss;
 
-    Array<float> res;
     size_t e_t, d_t, data_size, hidden_size;
     size_t en_out_size;
 
@@ -42,9 +41,11 @@ public:
         Decoder.reset();
         attention.reset();
 
-        e_out.predict(Encoder.forward(e_in.predict(e)));
+        Array<float> hs = Encoder.forward(e_in.predict(e));
+        e_out.predict(hs);
 
         Decoder.set_h(Encoder.get_h());
+        attention.set_hs_en(hs);
 
         return d_out.predict(attention.forward(Decoder.forward(d_in.predict(x))));
     }
@@ -62,6 +63,7 @@ public:
         d_in.gradient(attention.backward(Decoder.backward(d_out.gradient(g))));
 
         Encoder.set_dh(Decoder.get_dh());
+        Encoder.set_dhs(attention.get_dhs_en());
 
         e_in.gradient(Encoder.backward(e_out.gradient(Array<float>({e_t, en_out_size}))));
 
@@ -82,5 +84,12 @@ public:
         d_out.update(LR);
         Decoder.update(LR);
         Encoder.update(LR);
+    }
+
+    template <class T>
+    void set_Loss(T &&l)
+    {
+        _loss = std::make_unique<T>(std::move(l));
+        is_initialized = false;
     }
 };

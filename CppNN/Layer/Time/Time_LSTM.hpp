@@ -7,6 +7,8 @@ class Time_LSTM : public Layer<T>
     Array<T> h, dh;
     Array<T> c, dc;
 
+    Array<T> dhs;
+
     Array<T> Wfx, Wfh, Bf;
     Array<T> Wgx, Wgh, Bg;
     Array<T> Wix, Wih, Bi;
@@ -53,7 +55,7 @@ public:
         Array<float> dx;
         for (size_t i = 0; i < dy.dimension()[0]; ++i)
         {
-            dx = lstms[i].backward(dy.cut({i}) + dh, dc);
+            dx = lstms[i].backward(dy.cut({i}) + dh + dhs.cut({i}), dc);
             dh = lstms[i].get_dh();
             dc = lstms[i].get_dc();
 
@@ -68,6 +70,8 @@ public:
 
     void set_h(const Array<T> &n) { h = n; }
     void set_dh(const Array<T> &n) { dh = n; }
+
+    void set_dhs(const Array<T> &n) { dhs = n; }
 
     void update(const T lr) override
     {

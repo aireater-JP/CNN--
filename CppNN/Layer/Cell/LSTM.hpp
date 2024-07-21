@@ -4,7 +4,7 @@
 template <typename T>
 class LSTM
 {
-    Array<T> F,G,I,O;
+    Array<T> F, G, I, O;
 
     Array<T> X;
     Array<T> H_prev;
@@ -87,18 +87,9 @@ public:
         return dX;
     }
 
-    Array<T> get_c()
-    {
-        return C_next;
-    }
+    Array<T> get_c() { return C_next; }
 
-    Array<T> get_dh()
-    {
-        return dH_prev;
-    }
+    Array<T> get_dh() { return dH_prev; }
 
-    Array<T> get_dc()
-    {
-        return dC_prev;
-    }
+    Array<T> get_dc() { return dC_prev; }
 };

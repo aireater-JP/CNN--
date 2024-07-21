@@ -23,7 +23,7 @@ public:
     {
         affines(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
 
-        _input_size = input_dimension.back_access(0);
+        _input_size = input_dimension[1];
         W = Array<T>({_input_size, _output_size});
         dW = Array<T>({_input_size, _output_size});
         B = Array<T>({_output_size});

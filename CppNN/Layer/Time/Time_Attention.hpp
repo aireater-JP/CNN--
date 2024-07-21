@@ -21,17 +21,18 @@ public:
     {
         att_wei = std::vector<AttentionWeight<T>>(input_dimension[0], AttentionWeight<T>(hs_s, input_dimension[1]));
         wei_sum = std::vector<WeightSum<T>>(input_dimension[0], WeightSum<T>(hs_s, input_dimension[1]));
-        return input_dimension;
+        return {input_dimension[0], input_dimension[1] * 2};
     }
 
     Array<T> forward(const Array<T> &hs_de) override
     {
-        Array<float> res({hs_de.dimension()[0], hs_de.dimension()[1]});
+        Array<float> res({hs_de.dimension()[0], hs_de.dimension()[1] * 2});
         Array<float> y;
         for (size_t i = 0; i < hs_de.dimension()[0]; ++i)
         {
             y = wei_sum[i].forward(hs_en, att_wei[i].forward(hs_en.cut({i}), hs_de));
-            std::copy(y.begin(), y.end(), (res.begin() + i * hs_de.dimension()[1]));
+            std::copy(y.begin(), y.end(), (res.begin() + i * hs_de.dimension()[1] * 2));
+            std::copy(hs_de.begin(), hs_de.end(), (res.begin() + i * hs_de.dimension()[1] * 2 + hs_de.dimension()[1]));
         }
         return res;
     }
@@ -47,6 +48,7 @@ public:
             std::copy(dh.begin(), dh.end(), (res.begin() + i * dy.dimension()[1]));
             dhs_en += wei_sum[i].get_dhs() + att_wei[i].get_dhs();
         }
+        res += dy;
 
         return res;
     }

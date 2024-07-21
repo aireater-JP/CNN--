@@ -3,6 +3,7 @@
 #include "../CppNN/Layer/Time/Time_LSTM.hpp"
 #include "../CppNN/Layer/Time/Time_Affine.hpp"
 #include "../CppNN/Layer/Time/Time_Attention.hpp"
+#include "../CppNN/Layer/Time/Time_ReLU.hpp"
 
 #include "Loss.hpp"
 
