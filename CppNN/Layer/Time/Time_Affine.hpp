@@ -21,7 +21,7 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
-        affines(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
+        affines = std::vector<Cell_Affine<T>>(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
 
         _input_size = input_dimension[1];
         W = Array<T>({_input_size, _output_size});

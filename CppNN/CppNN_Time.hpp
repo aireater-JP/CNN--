@@ -38,7 +38,7 @@ public:
 
     Array<float> predict(const Array<float> &x)
     {
-        Array<float> res(x.dimension()[0], output_size);
+        Array<float> res({x.dimension()[0], output_size});
         Array<float> y;
         for (size_t i = 0; i < x.dimension()[0]; ++i)
         {
@@ -54,7 +54,7 @@ public:
 
     Array<float> gradient(const Array<float> &dy)
     {
-        Array<float> res(dy.dimension()[0], output_size);
+        Array<float> res({dy.dimension()[0], output_size});
         Array<float> dx;
         for (size_t i = dy.dimension()[0] - 1; i < dy.dimension()[0]; --i)
         {

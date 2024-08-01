@@ -12,7 +12,7 @@ class AttentionWeight
 public:
     AttentionWeight(const Index &hs_s, const Index &h_s) : dhs(hs_s), dh(h_s) {}
 
-    Array<T> forward(const Array<T> &hs, const Array<T> &h) override
+    Array<T> forward(const Array<T> &hs, const Array<T> &h)
     {
         Array<T> a({h.size()});
 
@@ -25,12 +25,12 @@ public:
         return s.forward(a);
     }
 
-    Array<T> backward(const Array<T> &hs, const Array<T> &da) override
+    Array<T> backward(const Array<T> &hs, const Array<T> &da)
     {
         Array<float> ds = s.backward(da);
 
-        for (size_t i = 0; i < hs_cash.dimension()[0]; ++i)
-            for (size_t j = 0; j < hs_cash.dimension()[1]; ++j)
+        for (size_t i = 0; i < h_cash.dimension()[0]; ++i)
+            for (size_t j = 0; j < h_cash.dimension()[1]; ++j)
             {
                 dhs[{i, j}] = ds[j] * h_cash[j];
                 dh[j] += ds[j] * hs[{i, j}];

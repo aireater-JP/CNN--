@@ -28,7 +28,7 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
-        lstms(input_dimension[0], LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo));
+        lstms = std::vector<LSTM<T>>(input_dimension[0], LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo));
 
         _input_size = input_dimension.back_access(0);
 
@@ -51,7 +51,7 @@ public:
 
     Array<T> backward(const Array<T> &dy) override
     {
-        Array<float> res(dy.dimension()[0], _input_size);
+        Array<float> res({dy.dimension()[0], _input_size});
         Array<float> dx;
         for (size_t i = 0; i < dy.dimension()[0]; ++i)
         {

@@ -30,7 +30,7 @@ public:
         Array<float> y;
         for (size_t i = 0; i < hs_de.dimension()[0]; ++i)
         {
-            y = wei_sum[i].forward(hs_en, att_wei[i].forward(hs_en.cut({i}), hs_de));
+            y = wei_sum[i].forward(hs_en, att_wei[i].forward(hs_en, hs_de.cut({i})));
             std::copy(y.begin(), y.end(), (res.begin() + i * hs_de.dimension()[1] * 2));
             std::copy(hs_de.begin(), hs_de.end(), (res.begin() + i * hs_de.dimension()[1] * 2 + hs_de.dimension()[1]));
         }

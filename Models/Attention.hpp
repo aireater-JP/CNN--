@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CppNN_Time.hpp"
+#include "../CppNN/CppNN_Time.hpp"
 
 class Attention
 {
-    CppNN_Time e_in;
-    CppNN_Time e_out;
-    CppNN_Time d_in;
-    CppNN_Time d_out;
+    CppNN_Time &e_in;
+    CppNN_Time &e_out;
+    CppNN_Time &d_in;
+    CppNN_Time &d_out;
 
     Time_LSTM<float> Encoder;
     Time_LSTM<float> Decoder;
@@ -22,7 +22,7 @@ class Attention
     float batch_size = 0;
 
 public:
-    Attention(CppNN_Time e_in, CppNN_Time e_out, CppNN_Time d_in, CppNN_Time d_out,
+    Attention(CppNN_Time &e_in, CppNN_Time &e_out, CppNN_Time &d_in, CppNN_Time &d_out,
               const size_t e_t, const size_t d_t, const size_t &data_size, const size_t hidden_size)
         : e_in(e_in), e_out(e_out), d_in(d_in), d_out(d_out),
           Encoder(hidden_size), Decoder(hidden_size),
@@ -60,6 +60,8 @@ public:
         float y = loss(e, x, t);
         Array<float> g = _loss->backward();
 
+        //Decoder.set_dhs(Array<float>(Decoder.);
+        //Decoder.set_dhs();
         d_in.gradient(attention.backward(Decoder.backward(d_out.gradient(g))));
 
         Encoder.set_dh(Decoder.get_dh());
@@ -90,6 +92,5 @@ public:
     void set_Loss(T &&l)
     {
         _loss = std::make_unique<T>(std::move(l));
-        is_initialized = false;
     }
 };

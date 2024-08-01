@@ -8,9 +8,9 @@ class WeightSum
     Array<T> da, dhs;
 
 public:
-    WeightSum(const Index &hs_s, const Index &a_s) : dhs(hs_s), da(a_s) {}
+    WeightSum(const Index &hs_s, const Index &a_s) :  da(a_s),dhs(hs_s) {}
 
-    Array<T> forward(const Array<T> &hs, const Array<T> &a) override
+    Array<T> forward(const Array<T> &hs, const Array<T> &a)
     {
         Array<T> c({a.size()});
 
@@ -23,7 +23,7 @@ public:
         return c;
     }
 
-    Array<T> backward(const Array<T> &hs, const Array<T> &dc) override
+    Array<T> backward(const Array<T> &hs, const Array<T> &dc)
     {
         for (size_t i = 0; i < hs.dimension()[0]; ++i)
             for (size_t j = 0; j < hs.dimension()[1]; ++j)

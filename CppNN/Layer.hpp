@@ -17,3 +17,4 @@ public:
 #include "Layer/ReLU.hpp"
 #include "Layer/Sigmoid.hpp"
 #include "Layer/Softmax.hpp"
+#include "Layer/Affine.hpp"

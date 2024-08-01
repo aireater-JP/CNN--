@@ -20,8 +20,9 @@ public:
 
     Array<T> forward(const Array<T> &x) override
     {
+        Array<T> t = ReLUs[current].forward(x);
         current++;
-        return ReLUs[current].forward(x);
+        return t;
     }
 
     Array<T> backward(const Array<T> &dy) override
