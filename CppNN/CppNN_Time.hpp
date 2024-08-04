@@ -13,8 +13,6 @@ class CppNN_Time
 
     bool is_initialized = false;
 
-    size_t output_size;
-
 public:
     template <class T>
     void add_Layer(T &&l)
@@ -27,9 +25,9 @@ public:
     {
         Index x = input_size;
         for (auto &i : _layer)
+        {
             x = i->initialize(x);
-
-        output_size = x.back_access(0);
+        }
 
         is_initialized = true;
 
@@ -38,34 +36,22 @@ public:
 
     Array<float> predict(const Array<float> &x)
     {
-        Array<float> res({x.dimension()[0], output_size});
-        Array<float> y;
-        for (size_t i = 0; i < x.dimension()[0]; ++i)
+        Array<float> y = x;
+        for (auto &i : _layer)
         {
-            y = x.cut({i});
-            for (size_t j = 0; j < _layer.size(); ++j)
-            {
-                y = _layer[j]->forward(y);
-            }
-            std::copy(y.begin(), y.end(), (res.begin() + i * output_size));
+            y = i->forward(y);
         }
-        return res;
+        return y;
     }
 
     Array<float> gradient(const Array<float> &dy)
     {
-        Array<float> res({dy.dimension()[0], output_size});
-        Array<float> dx;
-        for (size_t i = dy.dimension()[0] - 1; i < dy.dimension()[0]; --i)
+        Array<float> dx = dy;
+        for (auto &i : _layer)
         {
-            dx = dy.cut({i});
-            for (size_t j = _layer.size() - 1; j < _layer.size(); --j)
-            {
-                dx = _layer[j]->backward(dx);
-            }
-            std::copy(dx.begin(), dx.end(), (res.begin() + i * output_size));
+            dx = i->forward(dx);
         }
-        return res;
+        return dx;
     }
 
     void update(const float lr)

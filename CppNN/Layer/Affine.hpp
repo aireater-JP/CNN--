@@ -35,12 +35,12 @@ public:
         return y;
     }
 
-    Array<T> backward(const Array<T> &x) override
+    Array<T> backward(const Array<T> &dy) override
     {
-        dW += dot(_input_cash.Transpose(), x);
+        dW += dot(_input_cash.Transpose(), dy);
         dB += x.sum(1);
 
-        return dot(x, W.Transpose());
+        return dot(dy, W.Transpose());
     }
 
     void update(const T learning_rate) override

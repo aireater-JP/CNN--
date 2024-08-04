@@ -12,7 +12,7 @@ class Time_Affine : public Layer<T>
 
     std::vector<Cell_Affine<T>> affines;
 
-    size_t _input_size, _output_size;
+    size_t _output_size;
 
     size_t current;
 
@@ -23,9 +23,8 @@ public:
     {
         affines = std::vector<Cell_Affine<T>>(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
 
-        _input_size = input_dimension[1];
-        W = Array<T>({_input_size, _output_size});
-        dW = Array<T>({_input_size, _output_size});
+        W = Array<T>({input_dimension[1], _output_size});
+        dW = Array<T>({input_dimension[1], _output_size});
         B = Array<T>({_output_size});
         dB = Array<T>({_output_size});
 
@@ -38,8 +37,7 @@ public:
 
     Array<T> forward(const Array<T> &x) override
     {
-        Array<T> X = reshape({0, _input_size}, x);
-        Array<T> y = affines[current].forward(X);
+        Array<T> y = affines[current].forward(x);
         current++;
         return y;
     }
@@ -47,9 +45,7 @@ public:
     Array<T> backward(const Array<T> &dy) override
     {
         current--;
-        Array<T> dY = reshape({0, _output_size}, dy);
-        Array<T> dx = affines[current].backward(dY);
-        return dx;
+        return affines[current].backward(dy);
     }
 
     void update(const T lr) override

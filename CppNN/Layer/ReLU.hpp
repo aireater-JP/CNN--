@@ -22,13 +22,13 @@ public:
         }
         return y;
     }
-    Array<T> backward(const Array<T> &x) override
+    Array<T> backward(const Array<T> &dy) override
     {
-        Array<T> y(x.dimension());
-        for (size_t i = 0; i < x.size(); ++i)
+        Array<T> dx(dy.dimension());
+        for (size_t i = 0; i < dy.size(); ++i)
         {
-            y[i] = x[i] * (0.0 < _input_cash[i]);
+            dx[i] = dy[i] * (0.0 < _input_cash[i]);
         }
-        return y;
+        return dx;
     }
 };

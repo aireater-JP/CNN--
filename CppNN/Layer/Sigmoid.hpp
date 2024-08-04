@@ -18,9 +18,9 @@ public:
         _output_cash = y;
         return y;
     }
-    Array<T> backward(const Array<T> &x) override
+    Array<T> backward(const Array<T> &dy) override
     {
-        return x * (1.0f - _output_cash) * _output_cash;
+        return dy * (1.0f - _output_cash) * _output_cash;
     }
 };
 

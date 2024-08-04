@@ -9,7 +9,7 @@ class Time_Sigmoid : public Layer<T>
     size_t current;
 
 public:
-    Time_ReLU() : current(0) {}
+    Time_Sigmoid() : current(0) {}
 
     Index initialize(const Index &input_dimension) override
     {
@@ -20,8 +20,9 @@ public:
 
     Array<T> forward(const Array<T> &x) override
     {
+        Array<T> t = Sigmoids[current].forward(x);
         current++;
-        return Sigmoid[current].forward(x);
+        return t;
     }
 
     Array<T> backward(const Array<T> &dy) override

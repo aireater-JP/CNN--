@@ -18,10 +18,10 @@ public:
         _output_cash = y;
         return y;
     }
-    Array<T> backward(const Array<T> &x) override
+    Array<T> backward(const Array<T> &dy) override
     {
-        Array<T> y(x.dimension());
-        y = x * (1.0f - (_output_cash ^ 2.0f));
-        return y;
+        Array<T> dx(dy.dimension());
+        dx = dy * (1.0f - (_output_cash ^ 2.0f));
+        return dx;
     }
 };
