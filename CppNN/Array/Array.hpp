@@ -113,6 +113,7 @@ public:
 
     void reshape(const Index &index);
     Array cut(const Index &index = {}) const;
+    void copy(const Array &array, const Index &index);
 
     Array Transpose();
     Array sum(const size_t axis) const;

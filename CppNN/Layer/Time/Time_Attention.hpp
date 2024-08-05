@@ -21,8 +21,8 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
-        att_wei = std::vector<AttentionWeight<T>>(input_dimension[0], AttentionWeight<T>(hs_size, input_dimension[1]));
-        wei_sum = std::vector<WeightSum<T>>(input_dimension[0], WeightSum<T>(hs_size, input_dimension[1]));
+        att_wei = std::vector<AttentionWeight<T>>(input_dimension[0], AttentionWeight<T>(hs_size));
+        wei_sum = std::vector<WeightSum<T>>(input_dimension[0], WeightSum<T>(hs_size));
         return {input_dimension[0], input_dimension[1] * 2};
     }
 
@@ -51,5 +51,5 @@ public:
 
     void set_hs(const Array<T> &hs) { hs = hs; }
 
-    void reset() { dhs_en.clear(); }
+    void reset() { dhs.clear(); }
 };

@@ -5,12 +5,7 @@
 template <typename T>
 class Time_Affine : public Layer<T>
 {
-    Array<T> W;
-    Array<T> dW;
-    Array<T> B;
-    Array<T> dB;
-
-    std::vector<Cell_Affine<T>> affines;
+    Cell_Affine<T> affines;
 
     size_t _output_size;
 
@@ -21,23 +16,14 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
-        affines = std::vector<Cell_Affine<T>>(input_dimension[0], Cell_Affine<T>(W, dW, B, dB));
-
-        W = Array<T>({input_dimension[1], _output_size});
-        dW = Array<T>({input_dimension[1], _output_size});
-        B = Array<T>({_output_size});
-        dB = Array<T>({_output_size});
-
-        Random<std::uniform_real_distribution<>> r(-1.0, 1.0);
-        for (auto &i : W)
-            i = r();
+        affines = Cell_Affine<T>(input_dimension[1], _output_size, input_dimension[0]);
 
         return {input_dimension[0], _output_size};
     }
 
     Array<T> forward(const Array<T> &x) override
     {
-        Array<T> y = affines[current].forward(x);
+        Array<T> y = affines.forward(x, current);
         current++;
         return y;
     }
@@ -45,16 +31,12 @@ public:
     Array<T> backward(const Array<T> &dy) override
     {
         current--;
-        return affines[current].backward(dy);
+        return affines.backward(dy, current);
     }
 
     void update(const T lr) override
     {
-        W -= dW * lr;
-        B -= dB * lr;
-
-        dW.clear();
-        dB.clear();
+        affines.update(lr);
     }
 
     void reset() override

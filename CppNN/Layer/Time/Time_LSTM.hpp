@@ -33,7 +33,7 @@ public:
                                                                  Wix, Wih, Bi, dWix, dWih, dBi,
                                                                  Wox, Woh, Bo, dWox, dWoh, dBo));
 
-        _input_size = input_dimension.back_access(0);
+        _input_size = input_dimension[1];
 
         init();
 
@@ -116,6 +116,7 @@ private:
         dh = Array<T>({1, _hidden_size});
         c = Array<T>({1, _hidden_size});
         dc = Array<T>({1, _hidden_size});
+        
         Wfx = Array<T>({_input_size, _hidden_size});
         Wfh = Array<T>({_hidden_size, _hidden_size});
         Bf = Array<T>({_hidden_size});

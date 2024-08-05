@@ -211,6 +211,27 @@ Array<T> Array<T>::cut(const Index &index) const
 }
 
 template <typename T>
+void Array<T>::copy(const Array<T> &array, const Index &index)
+{
+    size_t start = 0;
+    for (size_t i = 0; i < index.size(); ++i)
+    {
+        if (index[i] >= _dimension[i])
+            throw "要素が大きすぎます";
+        start += index[i] * _stride[i];
+    }
+
+    if (_dimension.size() - index.size() == array._dimension.size())
+        throw "配列が適合していません";
+
+    for (size_t i = 0; i < _dimension.size() - index.size(); ++i)
+        if (_dimension[index.size() + i] != array._dimension[i])
+            throw "配列が適合してません";
+
+    std::copy(array.begin(), array.end(), begin() + start);
+}
+
+template <typename T>
 Array<T> Array<T>::Transpose()
 {
     if (_dimension.size() != 2)
