@@ -12,8 +12,11 @@ public:
     virtual Array<T> backward(const Array<T> &dy) = 0;
 
     virtual void update(const T lr) {};
+    virtual void reset() {};
 };
 
 #include "Layer/ReLU.hpp"
 #include "Layer/Sigmoid.hpp"
 #include "Layer/Affine.hpp"
+#include "Layer/Tanh.hpp"
+#include "Layer/Softmax.hpp"

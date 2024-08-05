@@ -31,7 +31,7 @@ public:
         return ReLUs[current].backward(dy);
     }
 
-    void update(const T lr) override
+    void reset() override
     {
         current = 0;
     }

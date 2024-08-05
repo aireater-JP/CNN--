@@ -31,7 +31,7 @@ public:
         return Sigmoid[current].backward(dy);
     }
 
-    void update(const T lr) override
+    void reset(const T lr) override
     {
         current = 0;
     }

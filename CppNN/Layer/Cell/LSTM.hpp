@@ -9,7 +9,6 @@ class LSTM
     Array<T> X;
     Array<T> H_prev;
     Array<T> C_prev;
-    Array<T> H_next;
     Array<T> C_next;
 
     Array<T> dC_prev;
@@ -44,22 +43,21 @@ public:
         O = sigmoid(dot(x, Wox) + dot(h_prev, Woh) + Bo);
 
         C_next = F * c_prev + G * I;
-        H_next = O * tanh(C_next);
 
-        return H_next;
+        return O * tanh(C_next);
     }
 
-    Array<T> backward(const Array<T> &dH_next, const Array<T> &dC_next)
+    Array<T> backward(const Array<T> &dh_next, const Array<T> &dc_next)
     {
         Array<T> tanh_C_next = tanh(C_next);
 
-        Array<T> dS = dC_next + (dH_next * O) * (1.0f - tanh_C_next * tanh_C_next);
+        Array<T> dS = dc_next + (dh_next * O) * (1.0f - tanh_C_next * tanh_C_next);
 
         dC_prev = dS * F;
 
         Array<T> dI = dS * G * I * (1.f - I);
         Array<T> dF = dS * C_prev * F * (1.f - F);
-        Array<T> dO = dH_next * tanh_C_next * O * (1.f - O);
+        Array<T> dO = dh_next * tanh_C_next * O * (1.f - O);
         Array<T> dG = dS * I * (1.f - G * G);
 
         Array<T> HT = H_prev.Transpose();

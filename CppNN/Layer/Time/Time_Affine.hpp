@@ -50,12 +50,15 @@ public:
 
     void update(const T lr) override
     {
-        current = 0;
-
         W -= dW * lr;
         B -= dB * lr;
 
         dW.clear();
         dB.clear();
+    }
+
+    void reset() override
+    {
+        current = 0;
     }
 };

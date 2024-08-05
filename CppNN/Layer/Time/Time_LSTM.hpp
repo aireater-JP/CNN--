@@ -7,8 +7,6 @@ class Time_LSTM : public Layer<T>
     Array<T> h, dh;
     Array<T> c, dc;
 
-    Array<T> dhs;
-
     Array<T> Wfx, Wfh, Bf;
     Array<T> Wgx, Wgh, Bg;
     Array<T> Wix, Wih, Bi;
@@ -30,7 +28,10 @@ public:
 
     Index initialize(const Index &input_dimension) override
     {
-        lstms = std::vector<LSTM<T>>(input_dimension[0], LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf, Wgx, Wgh, Bg, dWgx, dWgh, dBg, Wix, Wih, Bi, dWix, dWih, dBi, Wox, Woh, Bo, dWox, dWoh, dBo));
+        lstms = std::vector<LSTM<T>>(input_dimension[0], LSTM<T>(Wfx, Wfh, Bf, dWfx, dWfh, dBf,
+                                                                 Wgx, Wgh, Bg, dWgx, dWgh, dBg,
+                                                                 Wix, Wih, Bi, dWix, dWih, dBi,
+                                                                 Wox, Woh, Bo, dWox, dWoh, dBo));
 
         _input_size = input_dimension.back_access(0);
 
@@ -53,7 +54,7 @@ public:
     {
         current--;
 
-        Array<T> dx = lstms[current].backward(dy + dh + dhs.cut({current}), dc);
+        Array<T> dx = lstms[current].backward(dy + dh, dc);
         dh = lstms[current].get_dh();
         dc = lstms[current].get_dc();
 
@@ -65,8 +66,6 @@ public:
 
     void set_h(const Array<T> &n) { h = n; }
     void set_dh(const Array<T> &n) { dh = n; }
-
-    void set_dhs(const Array<T> &n) { dhs = n; }
 
     void update(const T lr) override
     {
@@ -99,12 +98,12 @@ public:
         dBi.clear();
         dBo.clear();
         dBg.clear();
-
-        current = 0;
     }
 
     void reset()
     {
+        current = 0;
+
         h.clear();
         c.clear();
         dh.clear();

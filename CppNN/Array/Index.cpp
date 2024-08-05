@@ -46,35 +46,27 @@ Index &Index::operator=(Index &&index) noexcept
 size_t &Index::operator[](const size_t index)
 {
     if (index >= _size)
-    {
-        throw std::out_of_range("Index out of range");
-    }
+        throw "範囲外アクセス";
     return _data[index];
 }
 
 const size_t Index::operator[](const size_t index) const
 {
     if (index >= _size)
-    {
-        throw std::out_of_range("Index out of range");
-    }
+        throw "範囲外アクセス";
     return _data[index];
 }
 
 size_t &Index::back_access(const size_t index)
 {
     if (_size - 1 - index >= _size)
-    {
-        throw std::out_of_range("Index out of range");
-    }
+        throw "範囲外アクセス";
     return _data[_size - 1 - index];
 }
 
 const size_t Index::back_access(const size_t index) const
 {
     if (_size - 1 - index >= _size)
-    {
-        throw std::out_of_range("Index out of range");
-    }
+        throw "範囲外アクセス";
     return _data[_size - 1 - index];
 }

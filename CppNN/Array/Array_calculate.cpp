@@ -50,7 +50,7 @@ template <typename T>
 Array<T> dot(const Array<T> &x, const Array<T> &y)
 {
     if (x.dimension().size() != 2 or y.dimension().size() != 2 or x.dimension()[1] != y.dimension()[0])
-        throw "計算できないよ!";
+        throw "計算できません";
     size_t _I = x.dimension()[0];
     size_t _J = x.dimension()[1];
     size_t _K = y.dimension()[1];

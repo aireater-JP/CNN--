@@ -4,9 +4,8 @@ template <typename T>
 class AttentionWeight
 {
     Array<T> h_cash;
-
     Array<T> dhs, dh;
-
+    
     Softmax<T> s;
 
 public:

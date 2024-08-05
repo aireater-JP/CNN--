@@ -23,7 +23,7 @@ public:
 private:
     T sum_of_squared_error(const Array<T> &x, const Array<T> &teacher)
     {
-        T y = sum((x - teacher)^2.f);
+        T y = sum((x - teacher) ^ 2.f);
         return (y * 0.5) / (x.size() / x.dimension().back_access(0));
     }
 };

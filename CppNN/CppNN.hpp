@@ -36,7 +36,7 @@ public:
     Array<float> predict(const Array<float> &x)
     {
         if (is_initialized == false)
-            throw std::invalid_argument("initializeを呼んでね");
+            throw std::invalid_argument("initializeが呼ばれてません");
 
         Array<float> y = x;
         for (auto &i : _layer)

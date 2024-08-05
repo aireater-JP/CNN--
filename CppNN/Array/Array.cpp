@@ -68,14 +68,10 @@ Index Array<T>::calculate_stride(const Index &dimension) const
 {
     Index res(dimension.size());
 
-    // 一番後の次元が0の場合は0
-    if (dimension[dimension.size() - 1] == 0)
-        return res;
-
-    res[res.size() - 1] = 1;
+    res.back_access(0) = 1;
 
     for (size_t i = 1; i <= res.size() - 1; ++i)
-        res[res.size() - 1 - i] = res[res.size() - i] * dimension[dimension.size() - i];
+        res[res.size() - i - 1] = res[res.size() - i] * dimension[dimension.size() - i];
 
     return res;
 }
@@ -99,7 +95,7 @@ size_t Array<T>::calculate_mul_to_one(const Index &index) const
     for (size_t i = 0; i < _dimension.size(); ++i)
     {
         if (index[i] >= _dimension[i])
-            throw std::out_of_range("Index out of range");
+            throw "範囲外アクセス";
         res += index[i] * _stride[i];
     }
     return res;
@@ -111,7 +107,7 @@ Index Array<T>::calculate_one_to_mul(const size_t index) const
 {
     size_t idx = index;
     if (idx >= _size)
-        throw std::out_of_range("Index out of range");
+        throw "範囲外アクセス";
 
     Index res(_dimension.size());
 
@@ -147,7 +143,7 @@ Index broadcast_shape(const Index &x, const Index &y)
         size_t y_temp = (i < y.size()) ? y.back_access(i) : 1;
 
         if (x_temp != y_temp and x_temp != 1 and y_temp != 1)
-            throw std::logic_error("ブロードキャストできないお");
+            throw "ブロードキャストに対応していません";
 
         res.back_access(i) = std::max(x_temp, y_temp);
     }
@@ -169,15 +165,11 @@ void Array<T>::reshape(const Index &index)
                 temp *= i;
 
         if (_size % temp != 0)
-            throw "計算できないよ";
+            throw "変形できません";
 
         *std::find(idx.begin(), idx.end(), 0) = _size / temp;
-
-        _dimension = idx;
-        _stride = calculate_stride(_dimension);
-        return;
     }
-    if (_size != calculate_size(index))
+    else if (_size != calculate_size(index))
         throw "変形先と要素数が一致しません";
 
     _dimension = index;
@@ -202,7 +194,7 @@ Array<T> Array<T>::cut(const Index &index) const
     for (size_t i = 0; i < index.size(); ++i)
     {
         if (index[i] >= _dimension[i])
-            throw "エラーだお";
+            throw "要素が大きすぎます";
         start += index[i] * _stride[i];
     }
     for (size_t i = 0; i < idx.size(); ++i)
@@ -222,13 +214,13 @@ template <typename T>
 Array<T> Array<T>::Transpose()
 {
     if (_dimension.size() != 2)
-        throw "計算できないよ!";
+        throw "要素数が多すぎます";
 
     Array res({_dimension[1], _dimension[0]});
 
     for (size_t i = 0; i < _dimension[0]; ++i)
         for (size_t j = 0; j < _dimension[1]; ++j)
-            res[{j, i}] = operator[]({i, j});
+            res[{j, i}] = *this[{i, j}];
 
     return res;
 }
@@ -243,7 +235,7 @@ Array<T> Array<T>::sum(const size_t axis) const
     for (size_t i = 0; i < _size; ++i)
     {
         Index idx = calculate_one_to_mul(i);
-        res[res.broadcast_to_Index(idx)] += operator[](idx);
+        res[res.broadcast_to_Index(idx)] += *this[idx];
     }
 
     return res;
@@ -259,7 +251,7 @@ Array<T> Array<T>::max(const size_t axis) const
     for (size_t i = 0; i < _size; ++i)
     {
         Index idx = calculate_one_to_mul(i);
-        res[res.broadcast_to_Index(idx)] = std::max(res[res.broadcast_to_Index(idx)], operator[](idx));
+        res[res.broadcast_to_Index(idx)] = std::max(res[res.broadcast_to_Index(idx)], *this[idx]);
     }
 
     return res;
