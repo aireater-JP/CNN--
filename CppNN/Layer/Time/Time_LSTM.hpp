@@ -61,7 +61,6 @@ public:
         return dx;
     }
 
-    Array<T> get_h() { return h; }
     Array<T> get_dh() { return dh; }
 
     void set_h(const Array<T> &n) { h = n; }
