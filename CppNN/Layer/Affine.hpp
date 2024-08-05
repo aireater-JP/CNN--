@@ -38,7 +38,7 @@ public:
     Array<T> backward(const Array<T> &dy) override
     {
         dW += dot(_input_cash.Transpose(), dy);
-        dB += x.sum(1);
+        dB += dy.sum(1);
 
         return dot(dy, W.Transpose());
     }

@@ -49,6 +49,19 @@ Array<T> operator-(const Array<T> &x)
 template <typename T>
 Array<T> dot(const Array<T> &x, const Array<T> &y)
 {
+    if (x.dimension().size() == 1 and y.dimension().size() == 2 and x.dimension()[0] == y.dimension()[0])
+    {
+        size_t _J = x.dimension()[0];
+        size_t _K = y.dimension()[1];
+        Array<T> res({_K});
+
+        for (size_t k = 0; k < _K; ++k)
+            for (size_t j = 0; j < _J; ++j)
+                res[{k}] += x[{j}] * y[{j, k}];
+
+        return res;
+    }
+
     if (x.dimension().size() != 2 or y.dimension().size() != 2 or x.dimension()[1] != y.dimension()[0])
         throw "計算できません";
     size_t _I = x.dimension()[0];

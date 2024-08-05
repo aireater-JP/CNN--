@@ -28,7 +28,7 @@ public:
     Array<T> backward(const Array<T> &dy) override
     {
         current--;
-        return Sigmoid[current].backward(dy);
+        return Sigmoids[current].backward(dy);
     }
 
     void reset(const T lr) override

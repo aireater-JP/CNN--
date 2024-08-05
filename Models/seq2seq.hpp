@@ -1,9 +1,9 @@
 #pragma once
 
-#include "encoder.hpp";
-#include "decoder.hpp";
+#include "encoder.hpp"
+#include "decoder.hpp"
 
-#include "../Loss.hpp"
+#include "../CppNN/Loss.hpp"
 
 class seq2seq
 {
@@ -12,7 +12,11 @@ class seq2seq
 
     std::unique_ptr<Loss<float>> _loss;
 
+    size_t _output_size;
+
 public:
+    seq2seq() : en(10, 10), de(10, 10, 10) {}
+
     void initialize(const Index &input_size)
     {
         en.initialize(input_size);
@@ -21,11 +25,17 @@ public:
 
     Array<float> predict(const Array<float> &e, const Array<float> &x)
     {
-        en.predict(e);
+        for (size_t i = 0; i < e.dimension()[0]; ++i)
+            en.predict(e.cut({i}));
 
-        // enのhをdeに移植
+        de.set_h(en.get_h());
 
-        de.gradient(x);
+        Array<float> y({x.dimension()[0], _output_size});
+
+        for (size_t i = 0; i < x.dimension()[0]; ++i)
+            y.copy(de.gradient(x.cut({i})), i);
+
+        return y;
     }
 
     float loss(const Array<float> &e, const Array<float> &x, const Array<float> &t)
@@ -37,16 +47,22 @@ public:
     {
         float y = loss(e, x, t);
 
-        de.gradient(_loss->backward());
+        Array<float> dloss = _loss->backward();
 
-        // enにdeのhを移植
+        for (size_t i = 0; i < x.dimension()[0]; ++i)
+            de.gradient(dloss.cut(i));
 
-        en.gradient();
+        en.set_dh(de.get_dh());
+
+        for (size_t i = 0; i < e.dimension()[0]; ++i)
+            en.gradient(Array<float>({e.dimension()[1]}));
 
         return y;
     }
 
     void update(const float lr)
     {
+        en.update(lr);
+        de.update(lr);
     }
 };

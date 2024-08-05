@@ -62,6 +62,7 @@ public:
     }
 
     Array<T> get_dh() { return dh; }
+    Array<T> get_h() { return h; }
 
     void set_h(const Array<T> &n) { h = n; }
     void set_dh(const Array<T> &n) { dh = n; }
@@ -99,7 +100,7 @@ public:
         dBg.clear();
     }
 
-    void reset()
+    void reset() override
     {
         current = 0;
 
@@ -116,7 +117,7 @@ private:
         dh = Array<T>({1, _hidden_size});
         c = Array<T>({1, _hidden_size});
         dc = Array<T>({1, _hidden_size});
-        
+
         Wfx = Array<T>({_input_size, _hidden_size});
         Wfh = Array<T>({_hidden_size, _hidden_size});
         Bf = Array<T>({_hidden_size});

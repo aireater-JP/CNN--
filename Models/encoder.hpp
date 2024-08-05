@@ -6,7 +6,6 @@ class encoder
     CppNN_Time NN;
     Time_LSTM<float> rnn;
 
-    Array<float> hs;
     size_t current;
 
 public:
@@ -25,22 +24,36 @@ public:
     {
         Array<float> y = rnn.forward(NN.predict(x));
 
-        std::copy(y.begin(), y.end(), hs.begin() + current * y.size());
-
         current++;
         return y;
     }
 
-    Array<float> gradient(const Array<float> &dh)
+    Array<float> gradient(const Array<float> &dy)
     {
         current--;
 
-        return NN.gradient(rnn.backward(dh));
+        return NN.gradient(rnn.backward(dy));
     }
 
     void update(const float lr)
     {
         NN.update(lr);
         rnn.update(lr);
+    }
+
+    void reset()
+    {
+        NN.reset();
+        rnn.reset();
+    }
+
+    Array<float> get_h()
+    {
+        return rnn.get_h();
+    }
+
+    void set_dh(const Array<float> &dh)
+    {
+        rnn.set_dh(dh);
     }
 };

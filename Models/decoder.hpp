@@ -10,8 +10,14 @@ class decoder
     size_t current;
 
 public:
-    decoder(size_t hidden_size) : rnn(hidden_size)
-    {}
+    decoder(size_t middle_size, size_t hidden_size, size_t output_size) : rnn(hidden_size)
+    {
+        NN_in.add_Layer(Affine<float>(middle_size));
+        NN_in.add_Layer(ReLU<float>());
+
+        NN_in.add_Layer(Affine<float>(output_size));
+        NN_in.add_Layer(ReLU<float>());
+    }
 
     Index initialize(const Index &input_size)
     {
@@ -38,5 +44,22 @@ public:
         NN_in.update(lr);
         rnn.update(lr);
         NN_out.update(lr);
+    }
+
+    void reset()
+    {
+        NN_in.reset();
+        rnn.reset();
+        NN_out.reset();
+    }
+
+    void set_h(const Array<float> &h)
+    {
+        rnn.set_h(h);
+    }
+
+    Array<float> get_dh()
+    {
+        return rnn.get_dh();
     }
 };

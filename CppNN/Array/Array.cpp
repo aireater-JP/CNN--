@@ -241,7 +241,7 @@ Array<T> Array<T>::Transpose()
 
     for (size_t i = 0; i < _dimension[0]; ++i)
         for (size_t j = 0; j < _dimension[1]; ++j)
-            res[{j, i}] = *this[{i, j}];
+            res[{j, i}] = operator[]({i, j});
 
     return res;
 }
@@ -256,7 +256,7 @@ Array<T> Array<T>::sum(const size_t axis) const
     for (size_t i = 0; i < _size; ++i)
     {
         Index idx = calculate_one_to_mul(i);
-        res[res.broadcast_to_Index(idx)] += *this[idx];
+        res[res.broadcast_to_Index(idx)] += operator[](idx);
     }
 
     return res;

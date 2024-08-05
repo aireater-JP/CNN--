@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../CppNN/Layer/Time/Time_LSTM.hpp"
-#include "../CppNN/Layer/Time/Time_Affine.hpp"
-#include "../CppNN/Layer/Time/Time_Attention.hpp"
-#include "../CppNN/Layer/Time/Time_ReLU.hpp"
+#include "Layer/Time/Time_LSTM.hpp"
+#include "Layer/Time/Time_Affine.hpp"
+#include "Layer/Time/Time_Attention.hpp"
+#include "Layer/Time/Time_ReLU.hpp"
+#include "Layer/Time/Time_Sigmoid.hpp"
 
 #include "Loss.hpp"
 
@@ -59,6 +60,14 @@ public:
         for (size_t i = 0; i < _layer.size(); ++i)
         {
             _layer[i]->update(lr);
+        }
+    }
+
+    void reset()
+    {
+        for (size_t i = 0; i < _layer.size(); ++i)
+        {
+            _layer[i]->reset();
         }
     }
 };
